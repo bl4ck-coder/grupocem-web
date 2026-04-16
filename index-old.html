@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grupo CEM — Cadena de Valores</title>
+  <meta name="description" content="GrupoCEM es una empresa familiar con medio siglo de historia, con eje en la avicultura y sus actividades asociadas. Esperanza, Santa Fe, Argentina." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══ NAV ═══════════════════════════════════════════════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">
+        <span class="nav-logo-main">GRUPO CEM</span>
+        <span class="nav-logo-sub">Cadena de Valores</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#marcas">Marcas</a></li>
+        <li><a href="#noticias">Noticias</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ══════════════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-media">
+      <video id="hero-video" autoplay muted loop playsinline poster="assets/video/poster.jpg">
+        <!-- El cliente reemplaza este src con el video institucional -->
+        <!-- <source src="assets/video/institucional.mp4" type="video/mp4" /> -->
+      </video>
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Esperanza · Santa Fe · Argentina</p>
+      <h1 class="hero-title">GRUPO CEM</h1>
+      <p class="hero-tagline">Cadena de Valores</p>
+    </div>
+    <a href="#kpis" class="hero-scroll-hint" aria-label="Scroll">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+  </section>
+
+  <!-- ═══ KPI BAND ═══════════════════════════════════════════════════════════ -->
+  <section id="kpis" class="kpi-band">
+    <div class="kpi-inner">
+      <div class="kpi-item">
+        <span class="kpi-number">+50</span>
+        <span class="kpi-label">Años de historia</span>
+      </div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-item">
+        <span class="kpi-number">+600</span>
+        <span class="kpi-label">Empleados</span>
+      </div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-item">
+        <span class="kpi-number">4</span>
+        <span class="kpi-label">Unidades de negocio</span>
+      </div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-item">
+        <span class="kpi-number">120M</span>
+        <span class="kpi-label">Huevos por año</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MARCAS ═════════════════════════════════════════════════════════════ -->
+  <section id="marcas" class="section-light">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow">Nuestras Unidades</p>
+        <h2 class="section-title">Una cadena de valores</h2>
+      </div>
+      <div class="brands-grid">
+
+        <article class="brand-card brand-carnave">
+          <div class="brand-card-body">
+            <img src="assets/logos/carnave.png" alt="Carnave" class="brand-logo" onerror="this.style.display='none'" />
+            <h3 class="brand-name">Carnave</h3>
+            <p class="brand-desc">Producción y comercialización de pollos y huevos de primera calidad. Franquicias propias, frigorífico y logística integrada. Presente en todo el país.</p>
+            <a href="https://www.carnave.com.ar" target="_blank" rel="noopener" class="brand-link">carnave.com.ar →</a>
+          </div>
+        </article>
+
+        <article class="brand-card brand-avigan">
+          <div class="brand-card-body">
+            <img src="assets/logos/avigan.png" alt="Avigan" class="brand-logo" onerror="this.style.display='none'" />
+            <h3 class="brand-name">Avigan</h3>
+            <p class="brand-desc">Cadena agroindustrial con foco en insumos, acopio, nutrición animal y asesoramiento técnico para productores de la región pampeana.</p>
+            <a href="https://avigan.com.ar" target="_blank" rel="noopener" class="brand-link">avigan.com.ar →</a>
+          </div>
+        </article>
+
+        <article class="brand-card brand-avicola">
+          <div class="brand-card-body">
+            <img src="assets/logos/compania-avicola.png" alt="Compañía Avícola" class="brand-logo" onerror="this.style.display='none'" />
+            <h3 class="brand-name">Compañía Avícola</h3>
+            <p class="brand-desc">Más de 120 millones de huevos por año con trazabilidad garantizada. Presente en 1.500 puntos de venta. Certificación internacional FSSC 22000.</p>
+            <a href="https://www.ciaavicola.com.ar" target="_blank" rel="noopener" class="brand-link">ciaavicola.com.ar →</a>
+          </div>
+        </article>
+
+        <article class="brand-card brand-ovofood">
+          <div class="brand-card-body">
+            <img src="assets/logos/ovofood.png" alt="Ovo Food" class="brand-logo" onerror="this.style.display='none'" />
+            <h3 class="brand-name">Ovo Food</h3>
+            <p class="brand-desc">Procesamiento de huevo con valor agregado. Líneas CHEF y VITAL orientadas a gastronomía e industria alimentaria de alta demanda.</p>
+            <a href="https://ovofood.com.ar" target="_blank" rel="noopener" class="brand-link">ovofood.com.ar →</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ NOSOTROS ══════════════════════════════════════════════════════════ -->
+  <section id="nosotros" class="section-warm">
+    <div class="section-inner nosotros-inner">
+      <div class="nosotros-text">
+        <p class="section-eyebrow">Nosotros</p>
+        <h2 class="section-title">Una empresa familiar con medio siglo de historia</h2>
+        <p>Somos una empresa familiar que desarrolla actividades productivas a partir de recursos regionales para abastecer a diversos mercados.</p>
+        <p>Con eje en la avicultura y sus actividades asociadas, contamos con medio siglo de historia y empleamos a más de 600 personas en Esperanza, Santa Fe y la región.</p>
+        <p>Cada unidad de negocio integra la cadena de valor — desde la producción primaria hasta la comercialización en góndola — con estándares de calidad internacional.</p>
+        <a href="mailto:rrhh@grupocem.com.ar" class="btn-primary">Enviar CV</a>
+      </div>
+      <div class="nosotros-image">
+        <img src="assets/foto-instalaciones.jpg" alt="Instalaciones GrupoCEM — vista aérea" onerror="this.parentElement.classList.add('img-placeholder')" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ NOTICIAS ══════════════════════════════════════════════════════════ -->
+  <section id="noticias" class="section-light">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-eyebrow">Actualidad</p>
+        <h2 class="section-title">Novedades</h2>
+      </div>
+      <div class="news-grid" id="news-grid">
+        <!-- Las noticias se cargan dinámicamente desde Google Sheets -->
+        <div class="news-loading">Cargando noticias…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACTO + FOOTER ════════════════════════════════════════════════ -->
+  <footer id="contacto">
+    <div class="footer-inner">
+
+      <div class="footer-col footer-brand">
+        <p class="footer-logo">GRUPO CEM</p>
+        <p class="footer-tagline-small">Cadena de Valores</p>
+        <address>
+          Hohensfels 3018<br />
+          Esperanza, Santa Fe<br />
+          Tel. <a href="tel:+5434964220002">+54 3496 422002</a>
+        </address>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">Navegación</p>
+        <ul>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#marcas">Marcas</a></li>
+          <li><a href="#noticias">Noticias</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">Marcas</p>
+        <ul>
+          <li><a href="https://www.carnave.com.ar" target="_blank" rel="noopener">Carnave</a></li>
+          <li><a href="https://avigan.com.ar" target="_blank" rel="noopener">Avigan</a></li>
+          <li><a href="https://www.ciaavicola.com.ar" target="_blank" rel="noopener">Compañía Avícola</a></li>
+          <li><a href="https://ovofood.com.ar" target="_blank" rel="noopener">Ovo Food</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-social">
+        <p class="footer-col-title">Sumate al equipo</p>
+        <a href="mailto:rrhh@grupocem.com.ar" class="btn-primary btn-small">Enviar CV</a>
+        <div class="social-links">
+          <a href="#" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> GrupoCEM. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
