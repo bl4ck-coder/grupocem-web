@@ -55,17 +55,27 @@ function revealOnScroll(selector, { stagger = 0, threshold = 0.15 } = {}) {
 
   h1.textContent = '';
   const charSpans = [];
+  let currentWord = null;
   chars.forEach(({ char, italic }) => {
-    const sp = document.createElement('span');
     if (char === ' ') {
+      currentWord = null;
+      const sp = document.createElement('span');
       sp.className = 'hero-char hero-char-space';
       sp.textContent = ' ';
+      h1.appendChild(sp);
+      charSpans.push(sp);
     } else {
+      if (!currentWord) {
+        currentWord = document.createElement('span');
+        currentWord.className = 'hero-word';
+        h1.appendChild(currentWord);
+      }
+      const sp = document.createElement('span');
       sp.className = 'hero-char' + (italic ? ' hero-char-em' : '');
       sp.textContent = char;
+      currentWord.appendChild(sp);
+      charSpans.push(sp);
     }
-    h1.appendChild(sp);
-    charSpans.push(sp);
   });
 
   const badge    = document.querySelector('header .w-16');

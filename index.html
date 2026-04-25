@@ -87,7 +87,8 @@
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
         /* ── Hero title char split ── */
-        header h1 { perspective: 800px; }
+        header h1 { perspective: 800px; text-wrap: balance; }
+        .hero-word { display: inline-block; white-space: nowrap; }
         .hero-char {
           display: inline-block;
           transform-origin: 50% 100%;
@@ -989,24 +990,24 @@
 
           /* Perf overrides mobile: max-height y box-shadow son caros en CPU/GPU móvil */
           .brand-row {
-            transition: border-color 0.25s ease-out, transform 0.3s ease;
+            transition: border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
           }
           .brand-row:hover { transform: none; }
           .brand-row-content {
-            transition: max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: max-height;
           }
           .brand-row.open .brand-row-content { max-height: 900px; }
           .brand-row.open {
             /* sin transition sobre box-shadow: cambio inmediato, evita repaint por frame */
-            transition: border-color 0.25s ease-out;
+            transition: border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
           }
           .brand-row-fade,
           .brand-row.closing.closing-fade .brand-row-fade {
-            transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           }
           .brand-row-arrow {
-            transition: transform 0.3s ease-out, opacity 0.2s ease-out;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease-out;
           }
           .brand-row.open .brand-row-logo,
           .brand-row:hover .brand-row-logo { transform: none; }
