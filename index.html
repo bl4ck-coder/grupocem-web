@@ -986,6 +986,30 @@
           .brand-row-index { font-size: 22px; }
           .brand-row-content-inner { grid-template-columns: 1fr; gap: 20px; padding: 4px 22px 26px; }
           .brand-row-pills { grid-template-columns: 1fr; }
+
+          /* Perf overrides mobile: max-height y box-shadow son caros en CPU/GPU móvil */
+          .brand-row {
+            transition: border-color 0.25s ease-out, transform 0.3s ease;
+          }
+          .brand-row:hover { transform: none; }
+          .brand-row-content {
+            transition: max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: max-height;
+          }
+          .brand-row.open .brand-row-content { max-height: 900px; }
+          .brand-row.open {
+            /* sin transition sobre box-shadow: cambio inmediato, evita repaint por frame */
+            transition: border-color 0.25s ease-out;
+          }
+          .brand-row-fade,
+          .brand-row.closing.closing-fade .brand-row-fade {
+            transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+          }
+          .brand-row-arrow {
+            transition: transform 0.3s ease-out, opacity 0.2s ease-out;
+          }
+          .brand-row.open .brand-row-logo,
+          .brand-row:hover .brand-row-logo { transform: none; }
         }
     </style>
 <!-- GSAP + ScrollTrigger -->
