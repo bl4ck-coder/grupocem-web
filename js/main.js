@@ -14,7 +14,7 @@ const SHEET_CSV_URL = '';
 // Ejemplo:
 // const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXXXXXXXXXX/export?format=csv&gid=0';
 
-const MAX_NOTICIAS = 3;
+const MAX_NOTICIAS = 5;
 
 /* ─── Noticias de ejemplo (se usan cuando SHEET_CSV_URL está vacío) ──────── */
 const DEMO_NOTICIAS = [
@@ -22,21 +22,21 @@ const DEMO_NOTICIAS = [
     titulo:      'Carnave suma su quinto local en Santa Fe capital',
     fecha:       'Sep 2025',
     marca:       'Carnave',
-    imagen_url:  'https://www.radioeme.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-02-at-11.12.28-AM.jpeg',
+    imagen_url:  'assets/news/carnave-local.jpg',
     descripcion: 'Nuevo local en Bv. Gálvez y Sarmiento, frente a Plaza Pueyrredón. El punto de venta ofrece toda la línea de productos frescos, cortes vacunos y porcinos, chacinados y almacén. Con esta apertura Carnave consolida su presencia en la capital provincial y avanza hacia las 150 sucursales en todo el país.',
   },
   {
     titulo:      'Argentina lidera el consumo mundial de huevos',
     fecha:       'Ene 2026',
     marca:       'Avicola',
-    imagen_url:  'https://elsantafesino.com/wp-content/uploads/19272_avicola.jpg',
+    imagen_url:  'assets/news/avicola-local.jpg',
     descripcion: 'Con 398 huevos por habitante al año, Argentina se posiciona como el mayor consumidor de huevos del mundo. Compañía Avícola, con una producción de más de 120 millones de huevos anuales y certificación FSSC 22000, acompaña este crecimiento sostenido abasteciendo a más de 1.500 puntos de venta en todo el país.',
   },
   {
     titulo:      'Avigan lanza nueva línea de balanceados para pollo parrillero',
     fecha:       'Mar 2026',
     marca:       'Avigan',
-    imagen_url:  'https://cdn.agroempresario.com/images/posts/a2fb5cf19d2689bdf56b3bb4d7c52e529fec2b2d55c1a63f_840.jpg',
+    imagen_url:  'assets/news/avigan-local.jpg',
     descripcion: 'Avigan presenta una formulación de balanceado diseñada específicamente para mejorar la conversión y el rendimiento en la producción de pollo parrillero. Desarrollada en el laboratorio de Humboldt con ingredientes trazables de la propia cadena del Grupo, la línea busca reducir costos de producción sin resignar calidad sanitaria.',
   },
 ];
@@ -131,14 +131,103 @@ function sanitizeUrl(str) {
   const s = String(str || '').trim();
   if (!s) return '';
   if (/^https?:\/\//.test(s)) return s;
+  // Permitimos paths relativos locales (ej. assets/news/...)
+  if (/^[\w./-]+\.(jpg|jpeg|png|webp|gif|avif)$/i.test(s)) return s;
   return '';
 }
 
-/* ── Tab news helpers ──────────────────────────────────────────────────── */
-let _newsPanels = [];
-let _newsTabs   = [];
+/* Placeholder mustard si la imagen no carga: SVG inline 1x1 cream con monograma marca. */
+function mediaPlaceholderURL(brand) {
+  const initial = (brand || 'CEM').slice(0, 1).toUpperCase();
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fdfcf0'/><stop offset='1' stop-color='%23ede9d9'/></linearGradient></defs><rect width='800' height='500' fill='url(%23g)'/><text x='400' y='280' text-anchor='middle' font-family='Newsreader, serif' font-style='italic' font-weight='800' font-size='200' fill='%23c9a227' opacity='0.55'>${initial}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + svg.replace(/#/g, '%23');
+}
 
-function buildNewsPanel(item) {
+/* ── A2: Bento editorial — hero card + mini-cards stack ─────────────── */
+let _newsItems = [];
+let _heroCard  = null;
+let _miniCards = [];
+let _newsIndex        = 0;
+let _newsProgressTween = null;
+let _newsPaused       = false;
+let _newsInView       = false;
+let _lastCursor       = { x: null, y: null };
+const NEWS_AUTO_MS    = 7000;
+
+function buildHeroShell() {
+  const hero = document.createElement('article');
+  hero.className = 'nc-hero';
+
+  const media = document.createElement('div');
+  media.className = 'nc-hero-media';
+  const img = document.createElement('img');
+  img.alt = '';
+  img.addEventListener('error', () => {
+    const brand = img.getAttribute('data-brand') || 'CEM';
+    img.src = mediaPlaceholderURL(brand);
+  });
+  media.appendChild(img);
+
+  // Medallón mustard editorial con ring SVG progress (reemplaza al "01/03").
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const medallion = document.createElement('div');
+  medallion.className = 'nc-hero-medallion';
+  const ringSvg = document.createElementNS(SVG_NS, 'svg');
+  ringSvg.setAttribute('class', 'nc-hero-medallion-ring');
+  ringSvg.setAttribute('viewBox', '0 0 88 88');
+  ringSvg.setAttribute('aria-hidden', 'true');
+  const ringTrack = document.createElementNS(SVG_NS, 'circle');
+  ringTrack.setAttribute('class', 'ring-track');
+  ringTrack.setAttribute('cx', '44');
+  ringTrack.setAttribute('cy', '44');
+  ringTrack.setAttribute('r', '42');
+  const ringProgress = document.createElementNS(SVG_NS, 'circle');
+  ringProgress.setAttribute('class', 'ring-progress');
+  ringProgress.setAttribute('cx', '44');
+  ringProgress.setAttribute('cy', '44');
+  ringProgress.setAttribute('r', '42');
+  ringSvg.appendChild(ringTrack);
+  ringSvg.appendChild(ringProgress);
+  medallion.appendChild(ringSvg);
+  const medNum = document.createElement('span');
+  medNum.className = 'nc-hero-medallion-num';
+  medNum.textContent = '01';
+  medallion.appendChild(medNum);
+  media.appendChild(medallion);
+  hero.appendChild(media);
+
+  const body = document.createElement('div');
+  body.className = 'nc-hero-body';
+  const meta = document.createElement('span');
+  meta.className = 'nc-hero-meta';
+  body.appendChild(meta);
+  const title = document.createElement('h3');
+  title.className = 'nc-hero-title';
+  body.appendChild(title);
+  const desc = document.createElement('p');
+  desc.className = 'nc-hero-desc';
+  body.appendChild(desc);
+  const btn = document.createElement('button');
+  btn.className = 'nc-hero-readmore';
+  btn.type = 'button';
+  btn.style.display = 'none';
+  btn.textContent = 'Leer más';
+  body.appendChild(btn);
+  hero.appendChild(body);
+
+  btn.addEventListener('click', () => {
+    const expanded = desc.classList.toggle('expanded');
+    btn.textContent = expanded ? 'Leer menos' : 'Leer más';
+    if (expanded) pauseNewsAutoRotate();
+    else resumeNewsAutoRotate();
+    if (window.gsap) {
+      gsap.fromTo(desc, { opacity: 0.4 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+    }
+  });
+  return hero;
+}
+
+function updateHeroCard(hero, item, index, total) {
   const marca  = sanitizeText(item.marca  || 'GrupoCEM');
   const fecha  = sanitizeText(item.fecha  || '');
   const titulo = sanitizeText(item.titulo || 'Sin título');
@@ -147,134 +236,221 @@ function buildNewsPanel(item) {
   const key    = marca.toLowerCase().replace(/\s/g, '');
   const color  = BRAND_COLORS[key] || BRAND_COLORS.grupocem;
 
-  const panel = document.createElement('div');
-  panel.className = 'nc-panel';
+  hero.style.setProperty('--nc-active-color', color);
 
-  if (imgUrl) {
-    const img = document.createElement('img');
-    img.className = 'nc-panel-img';
-    img.src = imgUrl; img.alt = titulo; img.loading = 'lazy';
-    panel.appendChild(img);
-  } else {
-    const ph = document.createElement('div');
-    ph.className = 'nc-panel-placeholder';
-    ph.style.borderRight = '4px solid ' + color;
-    panel.appendChild(ph);
-  }
+  const img        = hero.querySelector('.nc-hero-media img');
+  const medNum     = hero.querySelector('.nc-hero-medallion-num');
+  const meta       = hero.querySelector('.nc-hero-meta');
+  const title      = hero.querySelector('.nc-hero-title');
+  const descEl     = hero.querySelector('.nc-hero-desc');
+  const btn        = hero.querySelector('.nc-hero-readmore');
 
-  const body = document.createElement('div');
-  body.className = 'nc-panel-body';
+  img.setAttribute('data-brand', marca);
+  if (imgUrl) { img.src = imgUrl; img.alt = titulo; }
+  else        { img.src = mediaPlaceholderURL(marca); img.alt = ''; }
 
-  const meta = document.createElement('p');
-  meta.className = 'nc-panel-meta';
-  meta.style.color = color;
+  if (medNum) medNum.textContent = String(index + 1).padStart(2, '0');
+
   meta.textContent = fecha ? (marca + ' · ' + fecha) : marca;
-  body.appendChild(meta);
+  title.textContent = titulo;
+  descEl.classList.remove('expanded');
+  descEl.textContent = desc;
 
-  const h3 = document.createElement('h3');
-  h3.className = 'nc-panel-title';
-  h3.textContent = titulo;
-  body.appendChild(h3);
-
-  if (desc) {
-    const p = document.createElement('p');
-    p.className = 'nc-panel-desc';
-    p.textContent = desc;
-    body.appendChild(p);
-
-    if (desc.length > 140) {
-      const btn = document.createElement('button');
-      btn.className = 'nc-read-more';
-      btn.style.color = color;
-      btn.textContent = 'Leer más';
-      btn.addEventListener('click', () => {
-        const expanded = p.classList.toggle('expanded');
-        btn.textContent = expanded ? 'Leer menos' : 'Leer más';
-        if (window.gsap) {
-          gsap.fromTo(p, { opacity: 0.4, y: expanded ? 6 : -6 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
-        }
-      });
-      body.appendChild(btn);
-    }
+  if (desc && desc.length > 140) {
+    btn.style.display = 'inline-block';
+    btn.textContent = 'Leer más';
+  } else {
+    btn.style.display = 'none';
   }
-
-  panel.appendChild(body);
-  return panel;
 }
 
-function buildNewsTab(item, index) {
+function buildMiniCard(item, index) {
   const marca  = sanitizeText(item.marca  || 'GrupoCEM');
   const fecha  = sanitizeText(item.fecha  || '');
   const titulo = sanitizeText(item.titulo || 'Sin título');
+  const imgUrl = sanitizeUrl(item.imagen_url || '');
   const key    = marca.toLowerCase().replace(/\s/g, '');
   const color  = BRAND_COLORS[key] || BRAND_COLORS.grupocem;
 
   const btn = document.createElement('button');
-  btn.className = 'nc-tab-item';
+  btn.className = 'nc-mini';
+  btn.type = 'button';
   btn.style.setProperty('--nc-color', color);
 
-  const label = document.createElement('span');
-  label.className = 'nc-tab-label';
-  label.style.color = color;
-  label.textContent = fecha ? (marca + ' · ' + fecha) : marca;
-  btn.appendChild(label);
+  const imgWrap = document.createElement('span');
+  imgWrap.className = 'nc-mini-img';
+  const im = document.createElement('img');
+  im.alt = titulo;
+  im.loading = 'lazy';
+  im.src = imgUrl || mediaPlaceholderURL(marca);
+  im.addEventListener('error', () => { im.src = mediaPlaceholderURL(marca); });
+  imgWrap.appendChild(im);
+  btn.appendChild(imgWrap);
 
-  const title = document.createElement('p');
-  title.className = 'nc-tab-title';
-  title.textContent = titulo;
-  btn.appendChild(title);
+  const body = document.createElement('span');
+  body.className = 'nc-mini-body';
+  const m = document.createElement('span');
+  m.className = 'nc-mini-meta';
+  m.textContent = fecha ? (marca + ' · ' + fecha) : marca;
+  body.appendChild(m);
+  const t = document.createElement('span');
+  t.className = 'nc-mini-title';
+  t.textContent = titulo;
+  body.appendChild(t);
+  btn.appendChild(body);
 
-  btn.addEventListener('click', () => showNews(index));
+  btn.addEventListener('mouseenter', () => { if (_newsIndex !== index) showNews(index); });
+  btn.addEventListener('focus',      () => { if (_newsIndex !== index) showNews(index); });
+  btn.addEventListener('click',      () => showNews(index, { userInitiated: true }));
   return btn;
 }
 
-function showNews(index) {
-  const current = _newsPanels.find(p => p.classList.contains('active'));
-  const next = _newsPanels[index];
-  if (!current || current === next) {
-    _newsPanels.forEach((p, i) => p.classList.toggle('active', i === index));
-    _newsTabs.forEach((t, i)   => t.classList.toggle('active', i === index));
-    return;
-  }
-  if (window.gsap) {
-    gsap.to(current, {
-      opacity: 0, duration: 0.15,
-      onComplete: () => {
-        _newsPanels.forEach((p, i) => {
-          p.classList.toggle('active', i === index);
-          gsap.set(p, { opacity: 1 });
-        });
-        _newsTabs.forEach((t, i) => t.classList.toggle('active', i === index));
-        gsap.fromTo(next, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
-      },
-    });
+function scheduleNewsAutoRotate() {
+  if (_newsProgressTween) { _newsProgressTween.kill(); _newsProgressTween = null; }
+  if (_ringEl && window.gsap) gsap.set(_ringEl, { strokeDasharray: _ringLen, strokeDashoffset: _ringLen });
+  _heroDots.forEach((dot, i) => {
+    const fill = dot.firstElementChild;
+    if (!fill || !window.gsap) return;
+    if (i === _newsIndex) gsap.set(fill, { width: '0%' });
+    else gsap.set(fill, { width: '0%' });
+  });
+  if (!_newsInView || _newsPaused || _newsItems.length < 2 || !window.gsap) return;
+
+  const activeDotFill = _heroDots[_newsIndex] && _heroDots[_newsIndex].firstElementChild;
+  const ring = _ringEl;
+  if (!ring && !activeDotFill) return;
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      if (!_newsInView || _newsPaused) return;
+      const next = (_newsIndex + 1) % _newsItems.length;
+      showNews(next);
+    },
+  });
+  if (ring) tl.fromTo(ring, { strokeDashoffset: _ringLen }, { strokeDashoffset: 0, duration: NEWS_AUTO_MS / 1000, ease: 'none' }, 0);
+  if (activeDotFill) tl.fromTo(activeDotFill, { width: '0%' }, { width: '100%', duration: NEWS_AUTO_MS / 1000, ease: 'none' }, 0);
+  _newsProgressTween = tl;
+}
+
+function pauseNewsAutoRotate() {
+  _newsPaused = true;
+  if (_newsProgressTween) _newsProgressTween.pause();
+}
+
+function resumeNewsAutoRotate() {
+  _newsPaused = false;
+  if (!_newsInView || _newsItems.length < 2) return;
+  if (_newsProgressTween && _newsProgressTween.progress() < 1) {
+    _newsProgressTween.play();
   } else {
-    _newsPanels.forEach((p, i) => p.classList.toggle('active', i === index));
-    _newsTabs.forEach((t, i)   => t.classList.toggle('active', i === index));
+    scheduleNewsAutoRotate();
   }
 }
 
-function renderNewsTabs(rows) {
+function showNews(index, opts = {}) {
+  const item = _newsItems[index];
+  if (!item || !_heroCard) return;
+  const changed = _newsIndex !== index;
+  _newsIndex = index;
+
+  _miniCards.forEach((c, i) => c.classList.toggle('active', i === index));
+  _heroDots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+  updateHeroCard(_heroCard, item, index, _newsItems.length);
+
+  if (window.gsap && changed && !opts.initial) {
+    const media = _heroCard.querySelector('.nc-hero-media');
+    const body  = _heroCard.querySelector('.nc-hero-body');
+    if (media) {
+      const rect = media.getBoundingClientRect();
+      let cx = 50, cy = 50;
+      if (_lastCursor.x !== null && rect.width > 0 && rect.height > 0) {
+        cx = Math.max(0, Math.min(100, ((_lastCursor.x - rect.left) / rect.width)  * 100));
+        cy = Math.max(0, Math.min(100, ((_lastCursor.y - rect.top)  / rect.height) * 100));
+      }
+      gsap.fromTo(media,
+        { clipPath: 'circle(0% at ' + cx + '% ' + cy + '%)' },
+        {
+          clipPath: 'circle(140% at ' + cx + '% ' + cy + '%)',
+          duration: 0.8,
+          ease: 'expo.out',
+          onComplete: () => gsap.set(media, { clearProps: 'clipPath' }),
+        }
+      );
+    }
+    if (body) gsap.fromTo(body, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'power2.out' });
+  }
+
+  if (opts.userInitiated) _newsPaused = false;
+  scheduleNewsAutoRotate();
+}
+
+function renderNewsBento(rows) {
   newsGrid.textContent = '';
-  newsGrid.className = 'nc-news-container';
-  _newsPanels = [];
-  _newsTabs   = [];
+  newsGrid.className = 'news-bento';
+  _newsItems = rows;
+  _miniCards = [];
+  _heroDots  = [];
 
-  const tabNav = document.createElement('div');
-  tabNav.className = 'nc-tab-nav';
+  // Wrapper col-1 que contiene hero + dots pagination editorial.
+  const heroCol = document.createElement('div');
+  _heroCard = buildHeroShell();
+  heroCol.appendChild(_heroCard);
 
+  // Dots pagination — uno por noticia, click = jump.
+  if (rows.length > 1) {
+    const dots = document.createElement('div');
+    dots.className = 'nc-hero-dots';
+    rows.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'nc-hero-dot';
+      d.type = 'button';
+      d.setAttribute('aria-label', 'Noticia ' + (i + 1));
+      const fill = document.createElement('span');
+      fill.style.cssText = 'position:absolute;left:0;top:0;bottom:0;width:0;background:var(--brand-gold);';
+      d.appendChild(fill);
+      d.addEventListener('click', () => showNews(i, { userInitiated: true }));
+      dots.appendChild(d);
+      _heroDots.push(d);
+    });
+    heroCol.appendChild(dots);
+  }
+  newsGrid.appendChild(heroCol);
+
+  // Cache ring + length para animar progress.
+  const ring = _heroCard.querySelector('.nc-hero-medallion-ring .ring-progress');
+  if (ring) {
+    _ringEl  = ring;
+    _ringLen = (typeof ring.getTotalLength === 'function') ? ring.getTotalLength() : (2 * Math.PI * 42);
+    if (window.gsap) gsap.set(ring, { strokeDasharray: _ringLen, strokeDashoffset: _ringLen });
+  }
+
+  const stack = document.createElement('div');
+  stack.className = 'nc-mini-stack';
   rows.forEach((row, i) => {
-    const panel = buildNewsPanel(row);
-    _newsPanels.push(panel);
-    newsGrid.appendChild(panel);
-
-    const tab = buildNewsTab(row, i);
-    _newsTabs.push(tab);
-    tabNav.appendChild(tab);
+    const mini = buildMiniCard(row, i);
+    _miniCards.push(mini);
+    stack.appendChild(mini);
   });
+  newsGrid.appendChild(stack);
 
-  newsGrid.appendChild(tabNav);
-  showNews(0);
+  newsGrid.addEventListener('mousemove', (e) => {
+    _lastCursor.x = e.clientX;
+    _lastCursor.y = e.clientY;
+  }, { passive: true });
+
+  showNews(0, { initial: true });
+
+  const vpIo = new IntersectionObserver((entries) => {
+    _newsInView = entries[0].isIntersecting;
+    if (_newsInView) {
+      if (!_newsPaused) scheduleNewsAutoRotate();
+    } else {
+      if (_newsProgressTween) _newsProgressTween.pause();
+    }
+  }, { threshold: 0.25 });
+  vpIo.observe(newsGrid);
+
 }
 
 function renderFallback(msg) {
@@ -287,7 +463,7 @@ function renderFallback(msg) {
 
 async function loadNoticias() {
   if (!SHEET_CSV_URL) {
-    renderNewsTabs(DEMO_NOTICIAS);
+    renderNewsBento(DEMO_NOTICIAS);
     return;
   }
   try {
@@ -299,7 +475,7 @@ async function loadNoticias() {
       renderFallback('No hay noticias disponibles aún.');
       return;
     }
-    renderNewsTabs(rows);
+    renderNewsBento(rows);
   } catch (err) {
     console.warn('No se pudieron cargar las noticias:', err);
     renderFallback('Las noticias no están disponibles en este momento.');
