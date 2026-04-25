@@ -109,17 +109,46 @@ const BRAND_COLORS = {
   grupocem: '#8b6914',
 };
 
+/* Parser CSV RFC 4180: respeta campos quoted con comas, saltos de línea
+   internos, y comillas escapadas como "". Devuelve array de objetos
+   key→value usando la primera fila como headers. */
 function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  if (lines.length < 2) return [];
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
-  return lines.slice(1).map(line => {
-    const values = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
-    const row = {};
-    headers.forEach((h, i) => {
-      row[h] = (values[i] || '').trim().replace(/^"|"$/g, '');
-    });
-    return row;
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+  const src = text.replace(/^﻿/, ''); // strip BOM si Sheets lo agrega
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (src[i + 1] === '"') { field += '"'; i++; }
+        else { inQuotes = false; }
+      } else {
+        field += c;
+      }
+    } else {
+      if (c === '"') {
+        inQuotes = true;
+      } else if (c === ',') {
+        row.push(field); field = '';
+      } else if (c === '\n' || c === '\r') {
+        if (c === '\r' && src[i + 1] === '\n') i++;
+        row.push(field); field = '';
+        if (row.length > 1 || row[0] !== '') rows.push(row);
+        row = [];
+      } else {
+        field += c;
+      }
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  if (rows.length < 2) return [];
+  const headers = rows[0].map(h => h.trim().toLowerCase());
+  return rows.slice(1).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = (r[i] || '').trim(); });
+    return obj;
   });
 }
 

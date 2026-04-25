@@ -65,18 +65,27 @@ No se necesita acceder al código para agregar o editar noticias.
 
 ## 4. Agregar una noticia nueva
 
-Solo completar una nueva fila en el Sheet. La web muestra automáticamente las **3 primeras filas** del Sheet.
+Solo completar una nueva fila en el Sheet. La web muestra automáticamente las **5 primeras filas** del Sheet.
 
-> Para destacar una noticia, moverla a la primera fila. Para archivarla, moverla por debajo de la fila 3 o eliminarla.
+> Para destacar una noticia, moverla a la primera fila. Para archivarla, moverla por debajo de la fila 5 o eliminarla.
 
 ---
 
 ## 5. Columna imagen_url
 
-- Ingresar la URL directa de una imagen (debe comenzar con `https://`).
-- Se puede usar una imagen subida a Google Drive (compartida como "Cualquier persona con el enlace"), Imgur, o cualquier hosting de imágenes.
-- Si la celda está vacía, la tarjeta muestra un fondo de color sin imagen.
+- Ingresar la URL **directa** de una imagen (debe comenzar con `https://` y terminar en `.jpg`, `.png`, `.webp` o similar).
+- Si la celda está vacía, la tarjeta muestra un fondo crema con la inicial de la marca.
 - Tamaño recomendado: **800×450 px** (proporción 16:9).
+
+### Hosting recomendado
+
+| Servicio | Cómo obtener la URL directa |
+|---|---|
+| **Imgur** (más simple) | Subir la imagen → click derecho sobre la imagen → "Copiar dirección de imagen". La URL termina en `.jpg` o `.png`. |
+| **Cloudinary / hosting propio** | Usar la URL pública del archivo. |
+| **Google Drive** | ⚠️ **No funciona el link normal de "Compartir"** (`drive.google.com/file/d/.../view`) — devuelve una página HTML, no la imagen. Hay que convertirlo: si el link es `drive.google.com/file/d/ABC123/view`, usar `https://lh3.googleusercontent.com/d/ABC123` en su lugar. El archivo debe estar compartido como "Cualquier persona con el enlace". |
+
+> **Tip rápido**: si pegás la URL en una pestaña nueva del navegador y se abre la imagen sola (sin título, sin botones, sin nada alrededor), entonces sirve. Si se abre una página con sidebar, header o "Vista previa", **no sirve**.
 
 ---
 
@@ -88,8 +97,8 @@ Inmediatamente. El sitio carga las noticias en cada visita.
 **¿Qué pasa si hay un error en el Sheet?**
 El sitio muestra el mensaje "Las noticias no están disponibles en este momento." sin romperse.
 
-**¿Se puede tener más de 3 noticias?**
-Sí, el Sheet puede tener todas las que se quieran. El sitio siempre muestra las primeras 3 filas de datos.
+**¿Se puede tener más de 5 noticias?**
+Sí, el Sheet puede tener todas las que se quieran. El sitio siempre muestra las primeras 5 filas de datos.
 
 **¿Se necesita contraseña para editar?**
 Solo para editar el Sheet (cuenta de Google). La lectura por parte del sitio es pública.
