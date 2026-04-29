@@ -1171,7 +1171,7 @@
 <a href="#" data-open-cv-modal class="ml-4 flex items-center justify-center self-center transition-transform duration-300 hover:scale-105 cursor-pointer" aria-label="Sumate al equipo" style="margin-top:-30px;margin-bottom:-30px;">
   <img src="assets/ui/sumate-al-equipo.png" alt="Sumate al equipo" class="h-24 w-auto object-contain block translate-y-[6px]">
 </a>
-<a href="/admin/" class="ml-2 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-300" aria-label="Ingresar como admin" title="Admin" rel="nofollow">
+<a href="#" data-open-admin-modal class="ml-2 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-300" aria-label="Ingresar como admin" title="Admin" rel="nofollow">
   <span class="material-symbols-outlined" style="font-size:26px;">account_circle</span>
 </a>
 </div>
@@ -1597,9 +1597,92 @@ Trabajá con Nosotros
 
 <div class="py-6 px-10 md:px-20 max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
 <p class="font-body text-xs text-on-surface-variant tracking-wider">© 2026 <span class="font-serif italic font-bold">Grupo CEM</span> · Todos los derechos reservados.</p>
-<p class="font-body text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">Cadena de Valores · Esperanza, SF · <a href="/admin/" class="hover:text-primary transition-colors" rel="nofollow">Admin</a></p>
+<p class="font-body text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">Cadena de Valores · Esperanza, SF · <a href="#" data-open-admin-modal class="hover:text-primary transition-colors" rel="nofollow">Admin</a></p>
 </div>
 </footer>
+
+<!-- ── Modal Admin Login (reusa estilos cv-modal) ──────────────────────── -->
+<div class="cv-modal-overlay" id="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+  <div class="cv-modal" role="document" style="max-width: 380px;">
+    <button type="button" class="cv-modal-close" aria-label="Cerrar" data-close-admin-modal>
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <p class="cv-modal-eyebrow" style="color:#8b6914;">Panel de administración</p>
+    <h2 class="cv-modal-title" id="admin-modal-title">Ingresar</h2>
+    <p class="cv-modal-sub">Acceso al panel de noticias.</p>
+    <form id="admin-login-form" class="cv-form" autocomplete="off">
+      <div class="cv-field">
+        <label for="admin-password">Contraseña</label>
+        <input id="admin-password" name="password" type="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" id="admin-login-submit" style="margin-top:0.5rem;padding:0.85rem 1rem;border:none;border-radius:8px;background:#2c1a0e;color:#e8c44a;font-weight:600;cursor:pointer;font-family:inherit;">Ingresar</button>
+      <p id="admin-login-error" role="alert" aria-live="polite" style="color:#b03030;margin:0;min-height:1.25rem;font-size:0.85rem;"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function initAdminModal() {
+    const modal  = document.getElementById('admin-modal');
+    const form   = document.getElementById('admin-login-form');
+    const input  = document.getElementById('admin-password');
+    const errEl  = document.getElementById('admin-login-error');
+    const btn    = document.getElementById('admin-login-submit');
+    if (!modal || !form) return;
+
+    const open = () => {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      errEl.textContent = '';
+      input.value = '';
+      setTimeout(() => input.focus(), 80);
+    };
+    const close = () => {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    document.querySelectorAll('[data-open-admin-modal]').forEach(el => {
+      el.addEventListener('click', (e) => { e.preventDefault(); open(); });
+    });
+    document.querySelectorAll('[data-close-admin-modal]').forEach(el => {
+      el.addEventListener('click', close);
+    });
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.textContent = '';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: input.value }),
+          credentials: 'same-origin',
+        });
+        if (res.ok) {
+          window.location.href = '/admin/dashboard.html';
+          return;
+        }
+        if (res.status === 429) {
+          const data = await res.json().catch(() => ({}));
+          errEl.textContent = `Demasiados intentos. Probá en ${Math.ceil((data.retryAfter || 900) / 60)} min.`;
+        } else {
+          errEl.textContent = 'Contraseña incorrecta.';
+        }
+      } catch {
+        errEl.textContent = 'Error de red. Reintentá.';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  })();
+</script>
+
 <!-- ── Modal Trabajá con Nosotros ─────────────────────────────────────── -->
 <div class="cv-modal-overlay" id="cv-modal" role="dialog" aria-modal="true" aria-labelledby="cv-modal-title">
   <div class="cv-modal" role="document">
