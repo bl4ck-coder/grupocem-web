@@ -84,6 +84,9 @@ body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); backgrou
 
 .radio-group { display: flex; flex-wrap: wrap; gap: 0.85rem 1.5rem; padding-top: 0.25rem; }
 .radio-group label { font-weight: normal; display: inline-flex; align-items: center; gap: 0.4em; cursor: pointer; }
+.radio-group label.marca-otra { gap: 0.5em; }
+.radio-group label.marca-otra input[type="text"] { padding: 0.3rem 0.6rem; border: 1px solid #d8cfbf; border-radius: 6px; font: inherit; font-size: 0.9rem; width: 11rem; background: #fff; }
+.radio-group label.marca-otra input[type="text"]:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(232, 196, 74, 0.25); }
 
 .dropzone { border: 2px dashed #d8cfbf; border-radius: var(--radius); padding: 1.5rem; text-align: center; color: var(--text-muted); background: #fff; cursor: pointer; transition: all var(--transition); }
 .dropzone:hover, .dropzone:focus, .dropzone.dragover { border-color: var(--gold); background: #fffbea; outline: none; }

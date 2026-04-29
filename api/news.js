@@ -3,14 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { readNoticias, writeNoticias } from '../lib/kv.js';
 import { verifyRequest } from '../lib/auth.js';
 
-const MARCAS = ['Carnave', 'Avigan', 'Avicola', 'OvoFood', 'GrupoCEM'];
 const PUBLIC_LIMIT = 5;
 
 function validateNoticiaInput(body) {
   const errs = [];
   if (typeof body.titulo !== 'string' || !body.titulo.trim() || body.titulo.length > 100) errs.push('titulo');
   if (typeof body.fecha !== 'string' || !body.fecha.trim() || body.fecha.length > 30) errs.push('fecha');
-  if (!MARCAS.includes(body.marca)) errs.push('marca');
+  if (typeof body.marca !== 'string' || !body.marca.trim() || body.marca.length > 50) errs.push('marca');
   if (typeof body.descripcion !== 'string' || !body.descripcion.trim() || body.descripcion.length > 280) errs.push('descripcion');
   if (typeof body.imagen !== 'string' || !/^https?:\/\//.test(body.imagen)) errs.push('imagen');
   if (typeof body.imagenPathname !== 'string' || !body.imagenPathname) errs.push('imagenPathname');

@@ -3,13 +3,11 @@ import { del } from '@vercel/blob';
 import { readNoticias, writeNoticias } from '../../lib/kv.js';
 import { verifyRequest } from '../../lib/auth.js';
 
-const MARCAS = ['Carnave', 'Avigan', 'Avicola', 'OvoFood', 'GrupoCEM'];
-
 function validatePartial(body) {
   const errs = [];
   if (body.titulo != null && (typeof body.titulo !== 'string' || !body.titulo.trim() || body.titulo.length > 100)) errs.push('titulo');
   if (body.fecha != null && (typeof body.fecha !== 'string' || !body.fecha.trim() || body.fecha.length > 30)) errs.push('fecha');
-  if (body.marca != null && !MARCAS.includes(body.marca)) errs.push('marca');
+  if (body.marca != null && (typeof body.marca !== 'string' || !body.marca.trim() || body.marca.length > 50)) errs.push('marca');
   if (body.descripcion != null && (typeof body.descripcion !== 'string' || !body.descripcion.trim() || body.descripcion.length > 280)) errs.push('descripcion');
   if (body.imagen != null && (typeof body.imagen !== 'string' || !/^https?:\/\//.test(body.imagen))) errs.push('imagen');
   if (body.imagenPathname != null && (typeof body.imagenPathname !== 'string' || !body.imagenPathname)) errs.push('imagenPathname');

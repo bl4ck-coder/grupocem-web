@@ -19,6 +19,16 @@ const pathnameHidden = document.getElementById('imagen-pathname');
 const imageErr = document.getElementById('image-error');
 const saveBtn = document.getElementById('save-btn');
 const toastEl = document.getElementById('toast');
+const otraRadio = document.getElementById('marca-otra-radio');
+const otraInput = document.getElementById('marca-otra-input');
+
+const KNOWN_MARCAS = ['Carnave', 'Avigan', 'Avicola', 'OvoFood', 'GrupoCEM'];
+
+function getMarcaValue() {
+  const selected = form.elements.marca.value;
+  if (selected === '__otra__') return otraInput.value.trim();
+  return selected;
+}
 
 const DRAFT_KEY = `admin_draft_${editingId || 'new'}`;
 
@@ -41,7 +51,7 @@ function syncCounters() {
 function updateSaveEnabled() {
   const titulo = tituloEl.value.trim();
   const fecha = form.elements.fecha.value.trim();
-  const marca = form.elements.marca.value;
+  const marca = getMarcaValue();
   const desc = descEl.value.trim();
   const imagen = imagenHidden.value;
   const linkVal = form.elements.link.value.trim();
@@ -67,7 +77,7 @@ function saveDraft() {
   const data = {
     titulo: tituloEl.value,
     fecha: form.elements.fecha.value,
-    marca: form.elements.marca.value,
+    marca: getMarcaValue(),
     descripcion: descEl.value,
     imagen: imagenHidden.value,
     imagenPathname: pathnameHidden.value,
@@ -80,8 +90,14 @@ function loadDraftIntoForm(data) {
   tituloEl.value = data.titulo || '';
   form.elements.fecha.value = data.fecha || '';
   if (data.marca) {
-    const r = form.querySelector(`input[name="marca"][value="${data.marca}"]`);
-    if (r) r.checked = true;
+    if (KNOWN_MARCAS.includes(data.marca)) {
+      const r = form.querySelector(`input[name="marca"][value="${data.marca}"]`);
+      if (r) r.checked = true;
+      otraInput.value = '';
+    } else {
+      otraRadio.checked = true;
+      otraInput.value = data.marca;
+    }
   }
   descEl.value = data.descripcion || '';
   form.elements.link.value = data.link || '';
@@ -178,6 +194,12 @@ removeImageBtn.addEventListener('click', () => setImage('', ''));
 form.elements.fecha.addEventListener('input', () => { updateSaveEnabled(); saveDraft(); });
 form.elements.link.addEventListener('input', () => { updateSaveEnabled(); saveDraft(); });
 form.querySelectorAll('input[name="marca"]').forEach((node) => node.addEventListener('change', () => { updateSaveEnabled(); saveDraft(); }));
+otraInput.addEventListener('input', () => {
+  if (otraInput.value.trim()) otraRadio.checked = true;
+  updateSaveEnabled();
+  saveDraft();
+});
+otraInput.addEventListener('focus', () => { otraRadio.checked = true; updateSaveEnabled(); });
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -186,7 +208,7 @@ form.addEventListener('submit', async (e) => {
   const payload = {
     titulo: tituloEl.value.trim(),
     fecha: form.elements.fecha.value.trim(),
-    marca: form.elements.marca.value,
+    marca: getMarcaValue(),
     descripcion: descEl.value.trim(),
     imagen: imagenHidden.value,
     imagenPathname: pathnameHidden.value,
