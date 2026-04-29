@@ -81,24 +81,36 @@ function revealOnScroll(selector, { stagger = 0, threshold = 0.15 } = {}) {
   const badge    = document.querySelector('header .w-16');
   const subtitle = document.querySelector('header .flex.flex-col.items-center.gap-2');
   const brandLogos = document.querySelectorAll('.hero-brand-logo');
+  const wordmark = document.querySelector('header .cem-wordmark-text');
+  const wmGrupo  = wordmark && wordmark.querySelector('.cem-wm-grupo');
+  const wmCem    = wordmark && wordmark.querySelector('.cem-wm-cem');
   const tl = gsap.timeline({ delay: 0.2 });
 
-  if (badge) tl.from(badge, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+  if (wmGrupo && wmCem) {
+    gsap.set([wmGrupo, wmCem], { display: 'inline-block', y: 28, opacity: 0 });
+    tl.to(wmGrupo, { y: 0, opacity: 1, duration: 0.75, ease: 'power3.out' }, 0)
+      .to(wmCem,   { y: 0, opacity: 1, duration: 0.75, ease: 'power3.out' }, 0.28);
+  } else if (wordmark) {
+    gsap.set(wordmark, { y: 28, opacity: 0 });
+    tl.to(wordmark, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, 0);
+  }
 
-  gsap.set(charSpans, { y: 30, opacity: 0, rotate: () => (Math.random() - 0.5) * 3 });
+  if (badge) tl.from(badge, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.2');
+
+  gsap.set(charSpans, { y: 24, opacity: 0, rotate: () => (Math.random() - 0.5) * 3 });
   tl.to(charSpans, {
     y: 0, opacity: 1, rotate: 0,
-    duration: 0.7, stagger: 0.03, ease: 'power3.out',
-  }, badge ? '-=0.2' : 0);
+    duration: 0.45, stagger: 0.018, ease: 'power3.out',
+  }, badge ? '-=0.45' : 0);
 
-  if (subtitle) tl.from(subtitle, { y: 20, opacity: 0, duration: 0.6, ease: 'power2.out' }, '-=0.35');
+  if (subtitle) tl.from(subtitle, { y: 16, opacity: 0, duration: 0.4, ease: 'power2.out' }, '-=0.55');
 
   if (brandLogos.length) {
-    gsap.set(brandLogos, { y: 12, opacity: 0 });
+    gsap.set(brandLogos, { y: 10, opacity: 0 });
     tl.to(brandLogos, {
-      y: 0, opacity: 0.5, duration: 0.5, stagger: 0.08, ease: 'power2.out',
+      y: 0, opacity: 0.5, duration: 0.35, stagger: 0.05, ease: 'power2.out',
       onComplete() { gsap.set(brandLogos, { clearProps: 'opacity,y' }); },
-    }, '-=0.1');
+    }, '-=0.3');
   }
 
   // Video parallax + scale (1.02 → 1) tied to hero scroll progress.

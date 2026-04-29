@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Noticias — Admin GrupoCEM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-shell">
+  <header class="admin-header">
+    <h1 class="admin-h1">Noticias</h1>
+    <div class="admin-actions">
+      <a class="btn btn-primary" href="editor.html">+ Nueva</a>
+      <button id="refresh-btn" class="btn btn-ghost" type="button" title="Recargar">↻</button>
+      <button id="logout-btn" class="btn btn-ghost" type="button">Salir</button>
+    </div>
+  </header>
+
+  <p class="admin-hint">Las primeras 5 son visibles en el sitio público. Arrastrá <span aria-hidden="true">⋮⋮</span> para reordenar.</p>
+
+  <ul id="news-list" class="news-list" aria-busy="true"></ul>
+  <p id="empty-state" class="empty-state" hidden>No hay noticias todavía. Hacé clic en <strong>+ Nueva</strong>.</p>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</body>
+</html>

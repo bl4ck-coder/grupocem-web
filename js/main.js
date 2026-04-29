@@ -2,44 +2,10 @@
    GrupoCEM — main.js
    - Nav sticky + active links on scroll
    - Hamburger mobile menu
-   - Google Sheets noticias (CSV público)
-   ═══════════════════════════════════════════════════════════════════════════
-
-   CONFIGURACIÓN NOTICIAS:
-   Reemplazá SHEET_CSV_URL con la URL del Sheet publicado como CSV.
-   Ver INSTRUCCIONES-NOTICIAS.md para el procedimiento completo.
+   - Noticias desde /api/news (admin gestionado vía /admin/)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const SHEET_CSV_URL = '';
-// Ejemplo:
-// const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/XXXXXXXXXXXXXXXX/export?format=csv&gid=0';
-
-const MAX_NOTICIAS = 5;
-
-/* ─── Noticias de ejemplo (se usan cuando SHEET_CSV_URL está vacío) ──────── */
-const DEMO_NOTICIAS = [
-  {
-    titulo:      'Carnave suma su quinto local en Santa Fe capital',
-    fecha:       'Sep 2025',
-    marca:       'Carnave',
-    imagen_url:  'assets/news/carnave-local.jpg',
-    descripcion: 'Nuevo local en Bv. Gálvez y Sarmiento, frente a Plaza Pueyrredón. El punto de venta ofrece toda la línea de productos frescos, cortes vacunos y porcinos, chacinados y almacén. Con esta apertura Carnave consolida su presencia en la capital provincial y avanza hacia las 150 sucursales en todo el país.',
-  },
-  {
-    titulo:      'Argentina lidera el consumo mundial de huevos',
-    fecha:       'Ene 2026',
-    marca:       'Avicola',
-    imagen_url:  'assets/news/avicola-local.jpg',
-    descripcion: 'Con 398 huevos por habitante al año, Argentina se posiciona como el mayor consumidor de huevos del mundo. Compañía Avícola, con una producción de más de 120 millones de huevos anuales y certificación FSSC 22000, acompaña este crecimiento sostenido abasteciendo a más de 1.500 puntos de venta en todo el país.',
-  },
-  {
-    titulo:      'Avigan lanza nueva línea de balanceados para pollo parrillero',
-    fecha:       'Mar 2026',
-    marca:       'Avigan',
-    imagen_url:  'assets/news/avigan-local.jpg',
-    descripcion: 'Avigan presenta una formulación de balanceado diseñada específicamente para mejorar la conversión y el rendimiento en la producción de pollo parrillero. Desarrollada en el laboratorio de Humboldt con ingredientes trazables de la propia cadena del Grupo, la línea busca reducir costos de producción sin resignar calidad sanitaria.',
-  },
-];
+const NEWS_ENDPOINT = '/api/news';
 
 /* ─── Año en footer ──────────────────────────────────────────────────────── */
 const yearEl = document.getElementById('year');
@@ -108,49 +74,6 @@ const BRAND_COLORS = {
   ovofood:  '#e65100',
   grupocem: '#8b6914',
 };
-
-/* Parser CSV RFC 4180: respeta campos quoted con comas, saltos de línea
-   internos, y comillas escapadas como "". Devuelve array de objetos
-   key→value usando la primera fila como headers. */
-function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let field = '';
-  let inQuotes = false;
-  const src = text.replace(/^﻿/, ''); // strip BOM si Sheets lo agrega
-  for (let i = 0; i < src.length; i++) {
-    const c = src[i];
-    if (inQuotes) {
-      if (c === '"') {
-        if (src[i + 1] === '"') { field += '"'; i++; }
-        else { inQuotes = false; }
-      } else {
-        field += c;
-      }
-    } else {
-      if (c === '"') {
-        inQuotes = true;
-      } else if (c === ',') {
-        row.push(field); field = '';
-      } else if (c === '\n' || c === '\r') {
-        if (c === '\r' && src[i + 1] === '\n') i++;
-        row.push(field); field = '';
-        if (row.length > 1 || row[0] !== '') rows.push(row);
-        row = [];
-      } else {
-        field += c;
-      }
-    }
-  }
-  if (field !== '' || row.length) { row.push(field); rows.push(row); }
-  if (rows.length < 2) return [];
-  const headers = rows[0].map(h => h.trim().toLowerCase());
-  return rows.slice(1).map(r => {
-    const obj = {};
-    headers.forEach((h, i) => { obj[h] = (r[i] || '').trim(); });
-    return obj;
-  });
-}
 
 function sanitizeText(str) {
   return String(str || '').slice(0, 500);
@@ -244,6 +167,20 @@ function buildHeroShell() {
   body.appendChild(btn);
   hero.appendChild(body);
 
+  // Link externo opcional — anchor superpuesto, hidden por defecto, se actualiza por item.
+  const linkAnchor = document.createElement('a');
+  linkAnchor.className = 'nc-hero-link';
+  linkAnchor.target = '_blank';
+  linkAnchor.rel = 'noopener noreferrer';
+  linkAnchor.hidden = true;
+  linkAnchor.setAttribute('aria-label', 'Abrir noticia en nueva pestaña');
+  const linkArrow = document.createElement('span');
+  linkArrow.className = 'news-link-arrow';
+  linkArrow.textContent = '↗';
+  linkArrow.setAttribute('aria-hidden', 'true');
+  linkAnchor.appendChild(linkArrow);
+  hero.appendChild(linkAnchor);
+
   btn.addEventListener('click', () => {
     const expanded = desc.classList.toggle('expanded');
     btn.textContent = expanded ? 'Leer menos' : 'Leer más';
@@ -291,6 +228,17 @@ function updateHeroCard(hero, item, index, total) {
   } else {
     btn.style.display = 'none';
   }
+
+  const linkAnchor = hero.querySelector('.nc-hero-link');
+  if (linkAnchor) {
+    if (item.link && /^https?:\/\//.test(item.link)) {
+      linkAnchor.href = item.link;
+      linkAnchor.hidden = false;
+    } else {
+      linkAnchor.removeAttribute('href');
+      linkAnchor.hidden = true;
+    }
+  }
 }
 
 function buildMiniCard(item, index) {
@@ -328,9 +276,23 @@ function buildMiniCard(item, index) {
   body.appendChild(t);
   btn.appendChild(body);
 
+  if (item.link && /^https?:\/\//.test(item.link)) {
+    const arrow = document.createElement('span');
+    arrow.className = 'news-link-arrow nc-mini-arrow';
+    arrow.textContent = '↗';
+    arrow.setAttribute('aria-hidden', 'true');
+    btn.appendChild(arrow);
+  }
+
   btn.addEventListener('mouseenter', () => { if (_newsIndex !== index) showNews(index); });
   btn.addEventListener('focus',      () => { if (_newsIndex !== index) showNews(index); });
-  btn.addEventListener('click',      () => showNews(index, { userInitiated: true }));
+  btn.addEventListener('click', () => {
+    if (item.link && /^https?:\/\//.test(item.link)) {
+      window.open(item.link, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    showNews(index, { userInitiated: true });
+  });
   return btn;
 }
 
@@ -491,15 +453,17 @@ function renderFallback(msg) {
 }
 
 async function loadNoticias() {
-  if (!SHEET_CSV_URL) {
-    renderNewsBento(DEMO_NOTICIAS);
-    return;
-  }
   try {
-    const res = await fetch(SHEET_CSV_URL);
+    const res = await fetch(NEWS_ENDPOINT, { credentials: 'omit' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    const rows = parseCSV(text).slice(0, MAX_NOTICIAS);
+    const rows = (await res.json()).map((n) => ({
+      titulo: n.titulo,
+      fecha: n.fecha,
+      marca: n.marca,
+      descripcion: n.descripcion,
+      imagen_url: n.imagen,
+      link: n.link || null,
+    }));
     if (!rows.length) {
       renderFallback('No hay noticias disponibles aún.');
       return;

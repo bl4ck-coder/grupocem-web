@@ -31,3 +31,9 @@ build/
 *-backup.png
 *-backup.jpg
 *-backup.svg
+
+# Vercel
+.vercel
+
+.vercel
+.env*.local

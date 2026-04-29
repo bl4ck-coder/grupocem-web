@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title id="page-title">Nueva noticia — Admin GrupoCEM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-shell">
+  <header class="admin-header">
+    <h1 id="editor-title" class="admin-h1">Nueva noticia</h1>
+    <a class="btn btn-ghost" href="dashboard.html">← Volver</a>
+  </header>
+
+  <form id="editor-form" class="editor-form" autocomplete="off" novalidate>
+    <div class="field">
+      <label for="titulo">Título *</label>
+      <input id="titulo" name="titulo" type="text" maxlength="100" required>
+      <small class="counter"><span id="titulo-count">0</span> / 100</small>
+    </div>
+
+    <div class="field">
+      <label for="fecha">Fecha *</label>
+      <input id="fecha" name="fecha" type="text" maxlength="30" required placeholder="ej. Abr 2026">
+      <small class="hint">formato libre</small>
+    </div>
+
+    <fieldset class="field">
+      <legend>Marca *</legend>
+      <div class="radio-group">
+        <label><input type="radio" name="marca" value="Carnave" required> Carnave</label>
+        <label><input type="radio" name="marca" value="Avigan"> Avigan</label>
+        <label><input type="radio" name="marca" value="Avicola"> Compañía Avícola</label>
+        <label><input type="radio" name="marca" value="OvoFood"> Ovo Food</label>
+        <label><input type="radio" name="marca" value="GrupoCEM"> GrupoCEM</label>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label>Imagen *</label>
+      <div id="dropzone" class="dropzone" tabindex="0">
+        <p>Arrastrá una imagen acá<br><small>o hacé clic para subir</small><br><small>JPG / PNG / WEBP · max 5 MB</small></p>
+        <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      </div>
+      <div id="image-preview" class="image-preview" hidden>
+        <img id="preview-img" alt="">
+        <button type="button" id="remove-image" class="btn btn-ghost btn-icon" title="Quitar">✕</button>
+      </div>
+      <input type="hidden" id="imagen" name="imagen">
+      <input type="hidden" id="imagen-pathname" name="imagenPathname">
+      <small id="image-error" class="error"></small>
+    </div>
+
+    <div class="field">
+      <label for="descripcion">Descripción *</label>
+      <textarea id="descripcion" name="descripcion" maxlength="280" rows="3" required></textarea>
+      <small class="counter"><span id="desc-count">0</span> / 280</small>
+    </div>
+
+    <div class="field">
+      <label for="link">Link externo <span class="muted">(opcional)</span></label>
+      <input id="link" name="link" type="url" placeholder="https://...">
+      <small class="hint">Si se completa, la tarjeta es clickeable hacia esta URL.</small>
+    </div>
+
+    <div class="form-actions">
+      <a href="dashboard.html" class="btn btn-ghost">Cancelar</a>
+      <button id="save-btn" type="submit" class="btn btn-primary" disabled>Guardar</button>
+    </div>
+  </form>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/editor.js" defer></script>
+</body>
+</html>
