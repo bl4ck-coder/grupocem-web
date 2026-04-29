@@ -48,7 +48,7 @@ function renderRow(item) {
   actions.appendChild(el('a', {
     className: 'btn btn-ghost btn-icon',
     text: '✎',
-    attrs: { href: `editor.html?id=${encodeURIComponent(item.id)}`, title: 'Editar' },
+    attrs: { href: `/admin/editor.html?id=${encodeURIComponent(item.id)}`, title: 'Editar' },
   }));
   actions.appendChild(el('button', {
     className: 'btn btn-ghost btn-icon',

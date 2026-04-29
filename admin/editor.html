@@ -8,12 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="/admin/css/admin.css">
 </head>
 <body class="admin-shell">
   <header class="admin-header">
     <h1 id="editor-title" class="admin-h1">Nueva noticia</h1>
-    <a class="btn btn-ghost" href="dashboard.html">← Volver</a>
+    <a class="btn btn-ghost" href="/admin/dashboard.html">← Volver</a>
   </header>
 
   <form id="editor-form" class="editor-form" autocomplete="off" novalidate>
@@ -68,13 +68,13 @@
     </div>
 
     <div class="form-actions">
-      <a href="dashboard.html" class="btn btn-ghost">Cancelar</a>
+      <a href="/admin/dashboard.html" class="btn btn-ghost">Cancelar</a>
       <button id="save-btn" type="submit" class="btn btn-primary" disabled>Guardar</button>
     </div>
   </form>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/editor.js" defer></script>
+  <script src="/admin/js/editor.js" defer></script>
 </body>
 </html>
