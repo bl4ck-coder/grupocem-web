@@ -1671,11 +1671,16 @@ Trabajá con Nosotros
         if (res.status === 429) {
           const data = await res.json().catch(() => ({}));
           errEl.textContent = `Demasiados intentos. Probá en ${Math.ceil((data.retryAfter || 900) / 60)} min.`;
+        } else if (res.status === 401) {
+          errEl.textContent = 'Contraseña incorrecta. (401)';
         } else {
-          errEl.textContent = 'Contraseña incorrecta.';
+          const body = await res.text().catch(() => '');
+          errEl.textContent = `Error ${res.status}: ${body.slice(0, 80)}`;
+          console.error('admin login failed', res.status, body);
         }
-      } catch {
-        errEl.textContent = 'Error de red. Reintentá.';
+      } catch (e) {
+        errEl.textContent = 'Error de red: ' + (e?.message || 'unknown');
+        console.error('admin login network error', e);
       } finally {
         btn.disabled = false;
       }
