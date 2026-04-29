@@ -1185,10 +1185,16 @@
 </nav>
 <!-- Mobile Nav Menu -->
 <div id="nav-links" class="md:hidden fixed inset-0 bg-white z-40 flex-col items-center justify-center gap-10">
+<button id="nav-close" type="button" class="absolute top-5 right-5 text-primary" aria-label="Cerrar menú" style="background:transparent;border:none;cursor:pointer;padding:0.5rem;">
+  <span class="material-symbols-outlined" style="font-size:36px;">close</span>
+</button>
 <a href="#noticias" class="font-body text-2xl tracking-widest uppercase text-on-surface hover:text-primary transition-colors">Noticias</a>
 <a href="#marcas" class="font-body text-2xl tracking-widest uppercase text-on-surface hover:text-primary transition-colors">Marcas</a>
 <a href="#nosotros" class="font-body text-2xl tracking-widest uppercase text-on-surface hover:text-primary transition-colors">Nosotros</a>
 <a href="#contacto" class="font-body text-2xl tracking-widest uppercase text-on-surface hover:text-primary transition-colors">Contacto</a>
+<a href="#" data-open-admin-modal class="font-body text-2xl tracking-widest uppercase text-on-surface hover:text-primary transition-colors flex items-center gap-2" rel="nofollow">
+  <span class="material-symbols-outlined" style="font-size:28px;">account_circle</span> Admin
+</a>
 </div>
 <!-- 2. Hero Section -->
 <header id="inicio" class="relative h-screen w-full overflow-hidden flex items-center justify-center text-center">

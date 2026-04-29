@@ -50,17 +50,20 @@ const hamburger = document.getElementById('hamburger');
 const navMenu   = document.getElementById('nav-links');
 
 if (hamburger && navMenu) {
+  const closeMenu = () => {
+    hamburger.classList.remove('open');
+    navMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  };
   hamburger.addEventListener('click', () => {
     const open = hamburger.classList.toggle('open');
     navMenu.classList.toggle('open', open);
     hamburger.setAttribute('aria-expanded', String(open));
   });
+  const navClose = document.getElementById('nav-close');
+  if (navClose) navClose.addEventListener('click', closeMenu);
   navMenu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('open');
-      navMenu.classList.remove('open');
-      hamburger.setAttribute('aria-expanded', 'false');
-    });
+    link.addEventListener('click', closeMenu);
   });
 }
 
