@@ -202,6 +202,11 @@
           letter-spacing: -0.01em;
         }
 
+        /* Imagen Nosotros — sombra suave cálida (reemplaza shadow-2xl negra) */
+        .nosotros-img {
+          box-shadow: 0 20px 40px -24px rgba(31, 26, 23, 0.40),
+                      0 6px 14px -10px rgba(31, 26, 23, 0.14);
+        }
         /* ── Medallón 1974 ── */
         .medallion-1974 {
           position: absolute;
@@ -1461,7 +1466,7 @@
 <div class="order-1 md:order-2 relative">
 <div class="absolute -inset-4 bg-primary/10 rounded-full blur-3xl"></div>
 <div class="nosotros-img-wrap relative z-10 overflow-hidden rounded-2xl">
-<img alt="Interior del galpón de producción avícola del Grupo CEM en Humboldt, Santa Fe" class="nosotros-img relative z-10 rounded-2xl shadow-2xl w-full aspect-square object-cover" src="assets/nosotros/grupocem-galpon.jpg" onerror="this.src='assets/nosotros/grupocem-aerial.jpg'">
+<img alt="Vista aérea del complejo productivo avícola del Grupo CEM en Humboldt, Santa Fe" class="nosotros-img relative z-10 rounded-2xl w-full aspect-square object-cover" src="assets/nosotros/grupocem-nosotros.jpg" onerror="this.src='assets/nosotros/grupocem-aerial.jpg'">
 </div>
 <div class="medallion-1974 hidden md:flex" aria-label="Fundación 1974 en Esperanza, Santa Fe">
 <span class="mdl-eyebrow">Año de inicio</span>
@@ -1546,8 +1551,8 @@ Trabajá con Nosotros
 <div class="grid grid-cols-1 md:grid-cols-4 gap-16 px-10 md:px-20 py-16 w-full max-w-screen-2xl mx-auto items-start">
 <!-- Col 1: Brand -->
 <div class="space-y-5">
-<div class="flex flex-col items-start gap-3">
-<img alt="Grupo CEM" class="h-16 w-auto object-contain" src="assets/logos/grupocem-rombo.png">
+<div class="flex flex-row items-center gap-3 -mt-[10px]">
+<img alt="Grupo CEM" class="h-12 w-auto object-contain" src="assets/logos/grupocem-rombo.png">
 <div class="cem-wordmark-text cem-wordmark-footer" aria-label="Grupo CEM">
   <span class="cem-wm-grupo">GRUPO</span><span class="cem-wm-cem">CEM</span>
 </div>
