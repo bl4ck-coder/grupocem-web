@@ -5,7 +5,6 @@ const toastEl = document.getElementById('toast');
 const refreshBtn = document.getElementById('refresh-btn');
 const logoutBtn = document.getElementById('logout-btn');
 
-const PUBLIC_LIMIT = 5;
 let _items = [];
 
 function showToast(msg, kind = '') {
@@ -61,26 +60,15 @@ function renderRow(item) {
   return li;
 }
 
-function renderDivider(label, isVisibleHeader) {
-  return el('li', {
-    className: 'news-divider' + (isVisibleHeader ? ' visible' : ''),
-    text: label,
-    attrs: { 'aria-hidden': 'true' },
-  });
-}
-
 function render() {
   listEl.removeAttribute('aria-busy');
   listEl.textContent = '';
   if (_items.length === 0) { emptyEl.hidden = false; return; }
   emptyEl.hidden = true;
 
-  listEl.appendChild(renderDivider('Visibles en el sitio', true));
-  _items.slice(0, PUBLIC_LIMIT).forEach((it) => listEl.appendChild(renderRow(it)));
-  if (_items.length > PUBLIC_LIMIT) {
-    listEl.appendChild(renderDivider('En reserva', false));
-    _items.slice(PUBLIC_LIMIT).forEach((it) => listEl.appendChild(renderRow(it)));
-  }
+  // Todas las noticias se publican en el sitio (sin límite). El orden de la lista
+  // es el orden en que aparecen en el carrusel.
+  _items.forEach((it) => listEl.appendChild(renderRow(it)));
 }
 
 let _orderTimer = null;

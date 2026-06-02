@@ -275,7 +275,7 @@ if (medallion1974) {
   let animated = false;
   const animate = () => {
     if (animated) return;
-    const items = newsGrid.querySelectorAll('.nc-hero, .nc-mini');
+    const items = newsGrid.querySelectorAll('.nc-feature, .nc-film');
     if (!items.length) return;
     animated = true;
 
@@ -367,15 +367,11 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 });
 
-/* ─── 12. Nav hover: underline scaleX ──────────────────────────────────── */
-document.querySelectorAll('nav a[href^="#"]').forEach(link => {
-  const line = document.createElement('span');
-  line.style.cssText = 'position:absolute;bottom:-2px;left:0;right:0;height:2px;background:currentColor;transform-origin:center;transform:scaleX(0);pointer-events:none';
-  link.style.position = 'relative';
-  link.appendChild(line);
-  link.addEventListener('mouseenter', () => gsap.to(line, { scaleX: 1, duration: 0.25, ease: 'power2.out' }));
-  link.addEventListener('mouseleave', () => gsap.to(line, { scaleX: 0, duration: 0.2,  ease: 'power2.in'  }));
-});
+/* ─── 12. Nav hover underline — movido a CSS puro (::after :hover) ──────────
+   Antes era GSAP (mouseenter/mouseleave animando scaleX de un <span>). Si el
+   mouseleave no disparaba (p.ej. al clickear y scrollear con Lenis), el span
+   quedaba en scaleX:1 y el link parecía "seleccionado" permanentemente.
+   CSS :hover no puede quedar pegado. Ver la regla nav a::after en index.html. ── */
 
 /* ─── 13. Hero brand logos: canvas white-on-transparent processing ──────── */
 (function processHeroLogos() {
@@ -487,18 +483,22 @@ document.querySelectorAll('nav a[href^="#"]').forEach(link => {
   io.observe(wrap);
 })();
 
-/* ─── 16. Section transition: mustard rule (marcas → nosotros) ─────────── */
-(function sectionRule() {
-  const rule = document.getElementById('rule-marcas-nosotros');
-  if (!rule) return;
-  const io = new IntersectionObserver((entries) => {
-    if (!entries[0].isIntersecting) return;
-    io.disconnect();
-    gsap.timeline()
-      .to(rule, { width: '100%', opacity: 1, duration: 0.6, ease: 'expo.out' })
-      .to(rule, { opacity: 0, duration: 0.45, ease: 'power1.in' }, '+=0.3');
-  }, { threshold: 0.6 });
-  io.observe(rule);
+/* ─── 16. Section seams: fundido + regla + rombo, reveal al scrollear ──── */
+(function sectionSeams() {
+  const seams = document.querySelectorAll('.section-seam');
+  if (!seams.length || REDUCED_MOTION) return; // CSS deja las costuras visibles en reduced-motion
+  seams.forEach((seam) => {
+    const lines = seam.querySelectorAll('.seam-line');
+    const glyph = seam.querySelector('.seam-glyph');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      gsap.timeline()
+        .to(lines, { scaleX: 1, opacity: 1, duration: 0.7, ease: 'expo.out' })
+        .to(glyph, { scale: 1, rotation: 45, opacity: 1, duration: 0.5, ease: 'back.out(2)' }, '-=0.25');
+    }, { threshold: 0.6 });
+    io.observe(seam);
+  });
 })();
 
 /* ─── 17. KPI band subtle parallax (reemplaza el pin, no genera blank space) */

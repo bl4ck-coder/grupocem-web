@@ -98,23 +98,36 @@ function mediaPlaceholderURL(brand) {
   return 'data:image/svg+xml;utf8,' + svg.replace(/#/g, '%23');
 }
 
-/* ── A2: Bento editorial — hero card + mini-cards stack ─────────────── */
-let _newsItems = [];
-let _heroCard  = null;
-let _miniCards = [];
-let _newsIndex        = 0;
-let _newsProgressTween = null;
-let _newsPaused       = false;
-let _newsInView       = false;
-let _lastCursor       = { x: null, y: null };
-const NEWS_AUTO_MS    = 7000;
+/* ── A3: Featured card + filmstrip horizontal ───────────────────────── */
+let _newsItems   = [];
+let _featureCard = null;
+let _filmItems   = [];
+let _filmstripEl = null;
+let _newsIndex   = 0;
+let _autoTween   = null;
+let _newsPaused  = false;
+let _newsInView  = false;
+let _cdFill      = null;
+let _cdSecs      = null;
+const NEWS_AUTO_MS   = 7000;
+const NEWS_AUTO_SECS = Math.round(NEWS_AUTO_MS / 1000);
 
-function buildHeroShell() {
-  const hero = document.createElement('article');
-  hero.className = 'nc-hero';
+function setCountdownSecs(n) {
+  if (!_cdSecs) return;
+  _cdSecs.textContent = '';
+  const num = document.createElement('span');
+  num.className = 'nc-secs-num';
+  num.textContent = String(n);
+  _cdSecs.appendChild(num);
+  _cdSecs.appendChild(document.createTextNode('s'));
+}
+
+function buildFeatureShell() {
+  const card = document.createElement('article');
+  card.className = 'nc-feature';
 
   const media = document.createElement('div');
-  media.className = 'nc-hero-media';
+  media.className = 'nc-feature-media';
   const img = document.createElement('img');
   img.alt = '';
   img.addEventListener('error', () => {
@@ -122,55 +135,32 @@ function buildHeroShell() {
     img.src = mediaPlaceholderURL(brand);
   });
   media.appendChild(img);
-
-  // Medallón mustard editorial con ring SVG progress (reemplaza al "01/03").
-  const SVG_NS = 'http://www.w3.org/2000/svg';
-  const medallion = document.createElement('div');
-  medallion.className = 'nc-hero-medallion';
-  const ringSvg = document.createElementNS(SVG_NS, 'svg');
-  ringSvg.setAttribute('class', 'nc-hero-medallion-ring');
-  ringSvg.setAttribute('viewBox', '0 0 88 88');
-  ringSvg.setAttribute('aria-hidden', 'true');
-  const ringTrack = document.createElementNS(SVG_NS, 'circle');
-  ringTrack.setAttribute('class', 'ring-track');
-  ringTrack.setAttribute('cx', '44');
-  ringTrack.setAttribute('cy', '44');
-  ringTrack.setAttribute('r', '42');
-  const ringProgress = document.createElementNS(SVG_NS, 'circle');
-  ringProgress.setAttribute('class', 'ring-progress');
-  ringProgress.setAttribute('cx', '44');
-  ringProgress.setAttribute('cy', '44');
-  ringProgress.setAttribute('r', '42');
-  ringSvg.appendChild(ringTrack);
-  ringSvg.appendChild(ringProgress);
-  medallion.appendChild(ringSvg);
-  const medNum = document.createElement('span');
-  medNum.className = 'nc-hero-medallion-num';
-  medNum.textContent = '01';
-  medallion.appendChild(medNum);
-  media.appendChild(medallion);
-  hero.appendChild(media);
+  card.appendChild(media);
 
   const body = document.createElement('div');
-  body.className = 'nc-hero-body';
+  body.className = 'nc-feature-body';
+  // Número editorial gris (Inter), reemplaza al medallón rojo.
+  const num = document.createElement('span');
+  num.className = 'nc-feature-num';
+  body.appendChild(num);
   const meta = document.createElement('span');
-  meta.className = 'nc-hero-meta';
+  meta.className = 'nc-feature-meta';
   body.appendChild(meta);
   const title = document.createElement('h3');
-  title.className = 'nc-hero-title';
+  title.className = 'nc-feature-title';
   body.appendChild(title);
   const desc = document.createElement('p');
-  desc.className = 'nc-hero-desc';
+  desc.className = 'nc-feature-desc';
   body.appendChild(desc);
   const btn = document.createElement('button');
-  btn.className = 'nc-hero-readmore';
+  btn.className = 'nc-feature-readmore';
   btn.type = 'button';
   btn.style.display = 'none';
   btn.textContent = 'Leer más';
   body.appendChild(btn);
-  hero.appendChild(body);
+  card.appendChild(body);
 
-  // Link externo opcional — anchor superpuesto, hidden por defecto, se actualiza por item.
+  // Link externo opcional — anchor superpuesto, hidden por defecto.
   const linkAnchor = document.createElement('a');
   linkAnchor.className = 'nc-hero-link';
   linkAnchor.target = '_blank';
@@ -182,21 +172,21 @@ function buildHeroShell() {
   linkArrow.textContent = '↗';
   linkArrow.setAttribute('aria-hidden', 'true');
   linkAnchor.appendChild(linkArrow);
-  hero.appendChild(linkAnchor);
+  card.appendChild(linkAnchor);
 
   btn.addEventListener('click', () => {
     const expanded = desc.classList.toggle('expanded');
     btn.textContent = expanded ? 'Leer menos' : 'Leer más';
-    if (expanded) pauseNewsAutoRotate();
-    else resumeNewsAutoRotate();
+    if (expanded) pauseNews();
+    else resumeNews();
     if (window.gsap) {
       gsap.fromTo(desc, { opacity: 0.4 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
     }
   });
-  return hero;
+  return card;
 }
 
-function updateHeroCard(hero, item, index, total) {
+function updateFeature(card, item, index) {
   const marca  = sanitizeText(item.marca  || 'GrupoCEM');
   const fecha  = sanitizeText(item.fecha  || '');
   const titulo = sanitizeText(item.titulo || 'Sin título');
@@ -205,20 +195,20 @@ function updateHeroCard(hero, item, index, total) {
   const key    = marca.toLowerCase().replace(/\s/g, '');
   const color  = BRAND_COLORS[key] || BRAND_COLORS.grupocem;
 
-  hero.style.setProperty('--nc-active-color', color);
+  card.style.setProperty('--nc-active-color', color);
 
-  const img        = hero.querySelector('.nc-hero-media img');
-  const medNum     = hero.querySelector('.nc-hero-medallion-num');
-  const meta       = hero.querySelector('.nc-hero-meta');
-  const title      = hero.querySelector('.nc-hero-title');
-  const descEl     = hero.querySelector('.nc-hero-desc');
-  const btn        = hero.querySelector('.nc-hero-readmore');
+  const img    = card.querySelector('.nc-feature-media img');
+  const num     = card.querySelector('.nc-feature-num');
+  const meta    = card.querySelector('.nc-feature-meta');
+  const title   = card.querySelector('.nc-feature-title');
+  const descEl  = card.querySelector('.nc-feature-desc');
+  const btn     = card.querySelector('.nc-feature-readmore');
 
   img.setAttribute('data-brand', marca);
   if (imgUrl) { img.src = imgUrl; img.alt = titulo; }
   else        { img.src = mediaPlaceholderURL(marca); img.alt = ''; }
 
-  if (medNum) medNum.textContent = String(index + 1).padStart(2, '0');
+  if (num) num.textContent = String(index + 1).padStart(2, '0');
 
   meta.textContent = fecha ? (marca + ' · ' + fecha) : marca;
   title.textContent = titulo;
@@ -232,7 +222,7 @@ function updateHeroCard(hero, item, index, total) {
     btn.style.display = 'none';
   }
 
-  const linkAnchor = hero.querySelector('.nc-hero-link');
+  const linkAnchor = card.querySelector('.nc-hero-link');
   if (linkAnchor) {
     if (item.link && /^https?:\/\//.test(item.link)) {
       linkAnchor.href = item.link;
@@ -244,7 +234,7 @@ function updateHeroCard(hero, item, index, total) {
   }
 }
 
-function buildMiniCard(item, index) {
+function buildFilmItem(item, index) {
   const marca  = sanitizeText(item.marca  || 'GrupoCEM');
   const fecha  = sanitizeText(item.fecha  || '');
   const titulo = sanitizeText(item.titulo || 'Sin título');
@@ -253,198 +243,192 @@ function buildMiniCard(item, index) {
   const color  = BRAND_COLORS[key] || BRAND_COLORS.grupocem;
 
   const btn = document.createElement('button');
-  btn.className = 'nc-mini';
+  btn.className = 'nc-film';
   btn.type = 'button';
   btn.style.setProperty('--nc-color', color);
+  btn.setAttribute('role', 'listitem');
+  btn.setAttribute('aria-label', 'Noticia ' + (index + 1) + ': ' + titulo);
 
   const imgWrap = document.createElement('span');
-  imgWrap.className = 'nc-mini-img';
+  imgWrap.className = 'nc-film-img';
   const im = document.createElement('img');
   im.alt = titulo;
   im.loading = 'lazy';
   im.src = imgUrl || mediaPlaceholderURL(marca);
   im.addEventListener('error', () => { im.src = mediaPlaceholderURL(marca); });
   imgWrap.appendChild(im);
+  const num = document.createElement('span');
+  num.className = 'nc-film-num';
+  num.textContent = String(index + 1).padStart(2, '0');
+  imgWrap.appendChild(num);
   btn.appendChild(imgWrap);
 
   const body = document.createElement('span');
-  body.className = 'nc-mini-body';
+  body.className = 'nc-film-body';
   const m = document.createElement('span');
-  m.className = 'nc-mini-meta';
+  m.className = 'nc-film-meta';
   m.textContent = fecha ? (marca + ' · ' + fecha) : marca;
   body.appendChild(m);
   const t = document.createElement('span');
-  t.className = 'nc-mini-title';
+  t.className = 'nc-film-title';
   t.textContent = titulo;
   body.appendChild(t);
   btn.appendChild(body);
 
   if (item.link && /^https?:\/\//.test(item.link)) {
     const arrow = document.createElement('span');
-    arrow.className = 'news-link-arrow nc-mini-arrow';
+    arrow.className = 'news-link-arrow nc-film-arrow';
     arrow.textContent = '↗';
     arrow.setAttribute('aria-hidden', 'true');
     btn.appendChild(arrow);
   }
 
-  btn.addEventListener('mouseenter', () => { if (_newsIndex !== index) showNews(index); });
-  btn.addEventListener('focus',      () => { if (_newsIndex !== index) showNews(index); });
-  btn.addEventListener('click', () => {
-    if (item.link && /^https?:\/\//.test(item.link)) {
-      window.open(item.link, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    showNews(index, { userInitiated: true });
-  });
+  // Click = traer al frente (la card destacada). El enlace externo se abre
+  // desde la flecha ↗ de la card destacada.
+  btn.addEventListener('click', () => showNews(index, { userInitiated: true }));
   return btn;
 }
 
-function scheduleNewsAutoRotate() {
-  if (_newsProgressTween) { _newsProgressTween.kill(); _newsProgressTween = null; }
-  if (_ringEl && window.gsap) gsap.set(_ringEl, { strokeDasharray: _ringLen, strokeDashoffset: _ringLen });
-  _heroDots.forEach((dot, i) => {
-    const fill = dot.firstElementChild;
-    if (!fill || !window.gsap) return;
-    if (i === _newsIndex) gsap.set(fill, { width: '0%' });
-    else gsap.set(fill, { width: '0%' });
-  });
+function scrollFilmIntoView(index) {
+  const el = _filmItems[index];
+  if (!el || !_filmstripEl) return;
+  const stripRect = _filmstripEl.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  if (elRect.left < stripRect.left + 4 || elRect.right > stripRect.right - 4) {
+    const offset = el.offsetLeft - (_filmstripEl.clientWidth - el.clientWidth) / 2;
+    _filmstripEl.scrollTo({ left: Math.max(0, offset), behavior: 'smooth' });
+  }
+}
+
+/* Countdown lineal: barra que se llena + segundos que decrecen entre noticias. */
+function startCountdown() {
+  if (_autoTween) { _autoTween.kill(); _autoTween = null; }
+  if (_cdFill && window.gsap) gsap.set(_cdFill, { width: '0%' });
+  setCountdownSecs(NEWS_AUTO_SECS);
   if (!_newsInView || _newsPaused || _newsItems.length < 2 || !window.gsap) return;
 
-  const activeDotFill = _heroDots[_newsIndex] && _heroDots[_newsIndex].firstElementChild;
-  const ring = _ringEl;
-  if (!ring && !activeDotFill) return;
-
-  const tl = gsap.timeline({
+  const state = { p: 0 };
+  _autoTween = gsap.to(state, {
+    p: 1,
+    duration: NEWS_AUTO_MS / 1000,
+    ease: 'none',
+    onUpdate: () => {
+      if (_cdFill) gsap.set(_cdFill, { width: (state.p * 100) + '%' });
+      setCountdownSecs(Math.max(0, Math.ceil((1 - state.p) * NEWS_AUTO_SECS)));
+    },
     onComplete: () => {
       if (!_newsInView || _newsPaused) return;
-      const next = (_newsIndex + 1) % _newsItems.length;
-      showNews(next);
+      showNews((_newsIndex + 1) % _newsItems.length);
     },
   });
-  if (ring) tl.fromTo(ring, { strokeDashoffset: _ringLen }, { strokeDashoffset: 0, duration: NEWS_AUTO_MS / 1000, ease: 'none' }, 0);
-  if (activeDotFill) tl.fromTo(activeDotFill, { width: '0%' }, { width: '100%', duration: NEWS_AUTO_MS / 1000, ease: 'none' }, 0);
-  _newsProgressTween = tl;
 }
 
-function pauseNewsAutoRotate() {
+function pauseNews() {
   _newsPaused = true;
-  if (_newsProgressTween) _newsProgressTween.pause();
+  if (_autoTween) _autoTween.pause();
 }
 
-function resumeNewsAutoRotate() {
+function resumeNews() {
   _newsPaused = false;
   if (!_newsInView || _newsItems.length < 2) return;
-  if (_newsProgressTween && _newsProgressTween.progress() < 1) {
-    _newsProgressTween.play();
+  if (_autoTween && _autoTween.progress() < 1) {
+    _autoTween.play();
   } else {
-    scheduleNewsAutoRotate();
+    startCountdown();
   }
 }
 
 function showNews(index, opts = {}) {
   const item = _newsItems[index];
-  if (!item || !_heroCard) return;
+  if (!item || !_featureCard) return;
   const changed = _newsIndex !== index;
   _newsIndex = index;
 
-  _miniCards.forEach((c, i) => c.classList.toggle('active', i === index));
-  _heroDots.forEach((d, i) => d.classList.toggle('active', i === index));
+  _filmItems.forEach((c, i) => c.classList.toggle('active', i === index));
+  scrollFilmIntoView(index);
 
-  updateHeroCard(_heroCard, item, index, _newsItems.length);
+  updateFeature(_featureCard, item, index);
 
   if (window.gsap && changed && !opts.initial) {
-    const media = _heroCard.querySelector('.nc-hero-media');
-    const body  = _heroCard.querySelector('.nc-hero-body');
+    const media = _featureCard.querySelector('.nc-feature-media');
+    const body  = _featureCard.querySelector('.nc-feature-body');
+    // Wipe horizontal izquierda → derecha al cambiar de noticia.
     if (media) {
-      const rect = media.getBoundingClientRect();
-      let cx = 50, cy = 50;
-      if (_lastCursor.x !== null && rect.width > 0 && rect.height > 0) {
-        cx = Math.max(0, Math.min(100, ((_lastCursor.x - rect.left) / rect.width)  * 100));
-        cy = Math.max(0, Math.min(100, ((_lastCursor.y - rect.top)  / rect.height) * 100));
-      }
       gsap.fromTo(media,
-        { clipPath: 'circle(0% at ' + cx + '% ' + cy + '%)' },
+        { clipPath: 'inset(0 100% 0 0)' },
         {
-          clipPath: 'circle(140% at ' + cx + '% ' + cy + '%)',
-          duration: 0.8,
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 0.7,
           ease: 'expo.out',
           onComplete: () => gsap.set(media, { clearProps: 'clipPath' }),
         }
       );
     }
-    if (body) gsap.fromTo(body, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'power2.out' });
+    if (body) gsap.fromTo(body, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, delay: 0.08, ease: 'power2.out' });
   }
 
   if (opts.userInitiated) _newsPaused = false;
-  scheduleNewsAutoRotate();
+  startCountdown();
 }
 
-function renderNewsBento(rows) {
+function renderNews(rows) {
   newsGrid.textContent = '';
-  newsGrid.className = 'news-bento';
+  newsGrid.className = 'news-feature-wrap';
   _newsItems = rows;
-  _miniCards = [];
-  _heroDots  = [];
+  _filmItems = [];
 
-  // Wrapper col-1 que contiene hero + dots pagination editorial.
-  const heroCol = document.createElement('div');
-  _heroCard = buildHeroShell();
-  heroCol.appendChild(_heroCard);
+  // 1. Card destacada.
+  _featureCard = buildFeatureShell();
+  newsGrid.appendChild(_featureCard);
 
-  // Dots pagination — uno por noticia, click = jump.
+  // 2. Countdown lineal (solo con 2+ noticias).
   if (rows.length > 1) {
-    const dots = document.createElement('div');
-    dots.className = 'nc-hero-dots';
-    rows.forEach((_, i) => {
-      const d = document.createElement('button');
-      d.className = 'nc-hero-dot';
-      d.type = 'button';
-      d.setAttribute('aria-label', 'Noticia ' + (i + 1));
-      const fill = document.createElement('span');
-      fill.style.cssText = 'position:absolute;left:0;top:0;bottom:0;width:0;background:var(--brand-gold);';
-      d.appendChild(fill);
-      d.addEventListener('click', () => showNews(i, { userInitiated: true }));
-      dots.appendChild(d);
-      _heroDots.push(d);
-    });
-    heroCol.appendChild(dots);
-  }
-  newsGrid.appendChild(heroCol);
-
-  // Cache ring + length para animar progress.
-  const ring = _heroCard.querySelector('.nc-hero-medallion-ring .ring-progress');
-  if (ring) {
-    _ringEl  = ring;
-    _ringLen = (typeof ring.getTotalLength === 'function') ? ring.getTotalLength() : (2 * Math.PI * 42);
-    if (window.gsap) gsap.set(ring, { strokeDasharray: _ringLen, strokeDashoffset: _ringLen });
+    const cd = document.createElement('div');
+    cd.className = 'nc-countdown';
+    const track = document.createElement('div');
+    track.className = 'nc-countdown-track';
+    _cdFill = document.createElement('span');
+    _cdFill.className = 'nc-countdown-fill';
+    track.appendChild(_cdFill);
+    cd.appendChild(track);
+    _cdSecs = document.createElement('span');
+    _cdSecs.className = 'nc-countdown-secs';
+    _cdSecs.setAttribute('aria-hidden', 'true');
+    cd.appendChild(_cdSecs);
+    setCountdownSecs(NEWS_AUTO_SECS);
+    newsGrid.appendChild(cd);
+  } else {
+    _cdFill = null;
+    _cdSecs = null;
   }
 
-  const stack = document.createElement('div');
-  stack.className = 'nc-mini-stack';
+  // 3. Filmstrip horizontal — una card por noticia, scroll ilimitado.
+  const strip = document.createElement('div');
+  strip.className = 'nc-filmstrip';
+  strip.setAttribute('role', 'list');
+  strip.setAttribute('aria-label', 'Todas las noticias');
   rows.forEach((row, i) => {
-    const mini = buildMiniCard(row, i);
-    _miniCards.push(mini);
-    stack.appendChild(mini);
+    const film = buildFilmItem(row, i);
+    _filmItems.push(film);
+    strip.appendChild(film);
   });
-  newsGrid.appendChild(stack);
+  _filmstripEl = strip;
+  newsGrid.appendChild(strip);
 
-  newsGrid.addEventListener('mousemove', (e) => {
-    _lastCursor.x = e.clientX;
-    _lastCursor.y = e.clientY;
-  }, { passive: true });
+  // El auto-avance NO se pausa al pasar el mouse: las noticias siguen pasando
+  // siempre (solo se frena al expandir "Leer más" y al salir del viewport).
 
   showNews(0, { initial: true });
 
   const vpIo = new IntersectionObserver((entries) => {
     _newsInView = entries[0].isIntersecting;
     if (_newsInView) {
-      if (!_newsPaused) scheduleNewsAutoRotate();
-    } else {
-      if (_newsProgressTween) _newsProgressTween.pause();
+      if (!_newsPaused) startCountdown();
+    } else if (_autoTween) {
+      _autoTween.pause();
     }
-  }, { threshold: 0.25 });
+  }, { threshold: 0.2 });
   vpIo.observe(newsGrid);
-
 }
 
 function renderFallback(msg) {
@@ -471,7 +455,7 @@ async function loadNoticias() {
       renderFallback('No hay noticias disponibles aún.');
       return;
     }
-    renderNewsBento(rows);
+    renderNews(rows);
   } catch (err) {
     console.warn('No se pudieron cargar las noticias:', err);
     renderFallback('Las noticias no están disponibles en este momento.');

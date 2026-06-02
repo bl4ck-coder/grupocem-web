@@ -37,3 +37,6 @@ build/
 
 .vercel
 .env*.local
+
+# Brainstorming visual companion (mockups locales)
+.superpowers/
