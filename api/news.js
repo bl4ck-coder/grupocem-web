@@ -1,9 +1,7 @@
-// api/news.js — GET público (5 primeras), GET ?all=1 admin (todas), POST admin (crear).
+// api/news.js — GET público (todas), GET ?all=1 admin (todas), POST admin (crear).
 import { v4 as uuidv4 } from 'uuid';
 import { readNoticias, writeNoticias } from '../lib/kv.js';
 import { verifyRequest } from '../lib/auth.js';
-
-const PUBLIC_LIMIT = 5;
 
 function validateNoticiaInput(body) {
   const errs = [];
@@ -35,7 +33,7 @@ export default async function handler(req, res) {
     }
     const noticias = await readNoticias();
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    res.status(200).json(noticias.slice(0, PUBLIC_LIMIT));
+    res.status(200).json(noticias);
     return;
   }
 

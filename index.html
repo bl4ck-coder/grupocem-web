@@ -421,6 +421,46 @@
           opacity: 0;
         }
 
+        /* ── Section seam: costura entre secciones (fundido de color + regla + rombo CEM) ── */
+        .section-seam {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 22px;
+          height: 74px;
+          /* Fundido suave: el color de la sección de arriba funde con la de abajo. */
+          background: linear-gradient(to bottom, var(--seam-from, #f7f7f7) 0%, var(--seam-to, #ffffff) 100%);
+        }
+        .section-seam .seam-line {
+          width: clamp(60px, 22vw, 260px);
+          height: 1px;
+          background: linear-gradient(to right, rgba(201,162,39,0) 0%, rgba(201,162,39,0.55) 100%);
+          transform: scaleX(0);
+          transform-origin: right center;
+          opacity: 0;
+        }
+        .section-seam .seam-line.is-right {
+          background: linear-gradient(to left, rgba(201,162,39,0) 0%, rgba(201,162,39,0.55) 100%);
+          transform-origin: left center;
+        }
+        .section-seam .seam-glyph {
+          flex: none;
+          width: 9px;
+          height: 9px;
+          background: var(--brand-gold);
+          transform: rotate(45deg) scale(0);
+          box-shadow: 0 0 0 5px rgba(201,162,39,0.10);
+          opacity: 0;
+        }
+        @media (max-width: 768px) {
+          .section-seam { height: 60px; gap: 16px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .section-seam .seam-line { transform: scaleX(1); opacity: 1; }
+          .section-seam .seam-glyph { transform: rotate(45deg) scale(1); opacity: 1; }
+        }
+
         /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
           .scroll-hint-path { animation: none; }
@@ -549,130 +589,58 @@
           margin-top: 0;
         }
 
-        /* ── A2: Noticias bento editorial ─────────────────────────────── */
-        .news-bento {
-          display: grid;
-          grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
-          gap: 28px;
-          align-items: start;
-        }
-        /* Hero card (noticia activa) */
-        .nc-hero {
-          position: relative;
+        /* ── A3: Noticias — featured card + filmstrip horizontal ───────── */
+        .news-feature-wrap {
           display: flex;
           flex-direction: column;
+          gap: 24px;
+        }
+        /* Featured card (noticia activa): media a la izquierda, cuerpo a la derecha */
+        .nc-feature {
+          position: relative;
+          display: grid;
+          grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
           background: #fff;
+          border: 1px solid rgba(31, 26, 23, 0.20);  /* línea gris gentil: define el borde de la sección */
           border-radius: 24px;
           overflow: hidden;
           box-shadow: 0 6px 32px rgba(0,0,0,0.08);
-          min-height: 480px;
+          min-height: 420px;
           --nc-active-color: #b71c1c;
         }
-        .nc-hero-media {
+        .nc-feature-media {
           position: relative;
-          width: calc(100% - 28px);
-          aspect-ratio: 16 / 10;
-          margin: 14px 14px 0 14px;
-          border-radius: 20px;
           overflow: hidden;
           background: #f0ede5;
+          min-height: 320px;
           will-change: clip-path;
         }
-        .nc-hero-media img {
+        .nc-feature-media img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           display: block;
         }
-        /* Medallón editorial reemplaza al "01/03": círculo cream + borde mustard + ring SVG progress */
-        .nc-hero-medallion {
-          position: absolute;
-          top: 22px;
-          left: 22px;
-          width: 76px;
-          height: 76px;
-          z-index: 4;
-          pointer-events: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: #fdfcf0;
-          border-radius: 50%;
-          box-shadow: 0 8px 22px rgba(31, 26, 23, 0.28);
-          outline: 1px solid var(--brand-gold);
-          outline-offset: 4px;
-        }
-        .nc-hero-medallion-num {
-          font-family: 'Newsreader', serif;
-          font-style: italic;
-          font-weight: 800;
-          font-size: 32px;
-          line-height: 1;
-          color: #b71c1c;
-          letter-spacing: -0.02em;
-          z-index: 2;
-        }
-        .nc-hero-medallion-ring {
-          position: absolute;
-          inset: -6px;
-          width: calc(100% + 12px);
-          height: calc(100% + 12px);
-          transform: rotate(-90deg);
-          pointer-events: none;
-        }
-        .nc-hero-medallion-ring circle {
-          fill: none;
-          stroke: var(--brand-gold);
-          stroke-width: 1.6;
-          stroke-linecap: round;
-        }
-        .nc-hero-medallion-ring .ring-track {
-          stroke: var(--brand-gold);
-          opacity: 0.2;
-          stroke-width: 1;
-        }
-        @media (max-width: 768px) {
-          .nc-hero-medallion { width: 60px; height: 60px; top: 14px; left: 14px; }
-          .nc-hero-medallion-num { font-size: 24px; }
-        }
-        /* Dot pagination editorial debajo del hero card */
-        .nc-hero-dots {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-          margin-top: 6px;
-        }
-        .nc-hero-dot {
-          width: 28px;
-          height: 2px;
-          background: rgba(31, 26, 23, 0.18);
-          border: none;
-          padding: 0;
-          cursor: pointer;
-          transition: background 0.35s ease, width 0.35s ease;
+        .nc-feature-body {
           position: relative;
-          overflow: hidden;
-        }
-        .nc-hero-dot:hover { background: rgba(31, 26, 23, 0.4); }
-        .nc-hero-dot.active {
-          background: rgba(201, 162, 39, 0.18);
-          width: 56px;
-        }
-        .nc-hero-dot.active::after {
-          content: '';
-          position: absolute;
-          left: 0; top: 0; bottom: 0;
-          width: 0;
-          background: var(--brand-gold);
-        }
-        .nc-hero-body {
-          padding: 36px 42px 40px;
+          padding: 40px 44px 44px;
           display: flex;
           flex-direction: column;
+          justify-content: center;
           gap: 14px;
-          flex: 1;
         }
-        .nc-hero-meta {
+        /* Número editorial gris (Inter) — reemplaza al medallón rojo */
+        .nc-feature-num {
+          font-family: 'Inter', sans-serif;
+          font-weight: 800;
+          font-size: clamp(44px, 5vw, 68px);
+          line-height: 0.85;
+          color: #d4d0c8;
+          letter-spacing: -0.04em;
+          margin-bottom: 2px;
+          font-variant-numeric: tabular-nums;
+        }
+        .nc-feature-meta {
           font-family: 'Inter', sans-serif;
           font-size: 11px;
           font-weight: 700;
@@ -680,7 +648,7 @@
           text-transform: uppercase;
           color: var(--nc-active-color);
         }
-        .nc-hero-title {
+        .nc-feature-title {
           font-family: 'Newsreader', serif;
           font-weight: 800;
           font-size: clamp(26px, 2.4vw, 34px);
@@ -688,7 +656,7 @@
           color: #121212;
           letter-spacing: -0.01em;
         }
-        .nc-hero-desc {
+        .nc-feature-desc {
           font-family: 'Inter', sans-serif;
           font-size: 15px;
           line-height: 1.75;
@@ -697,8 +665,8 @@
           overflow: hidden;
           transition: max-height 0.45s ease;
         }
-        .nc-hero-desc.expanded { max-height: 800px; }
-        .nc-hero-readmore {
+        .nc-feature-desc.expanded { max-height: 800px; }
+        .nc-feature-readmore {
           align-self: flex-start;
           background: none;
           border: none;
@@ -714,65 +682,118 @@
           opacity: 0.85;
           transition: opacity 0.2s, transform 0.2s;
         }
-        .nc-hero-readmore:hover { opacity: 1; transform: translateX(3px); }
-        /* Mini cards stack */
-        .nc-mini-stack {
+        .nc-feature-readmore:hover { opacity: 1; transform: translateX(3px); }
+
+        /* Countdown lineal: barra que se llena + segundos al lado */
+        .nc-countdown {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 0 2px;
+        }
+        .nc-countdown-track {
+          position: relative;
+          flex: 1;
+          height: 2px;
+          background: rgba(31, 26, 23, 0.12);
+          border-radius: 2px;
+          overflow: hidden;
+        }
+        .nc-countdown-fill {
+          position: absolute;
+          left: 0; top: 0; bottom: 0;
+          width: 0;
+          background: var(--brand-gold);
+          border-radius: 2px;
+        }
+        .nc-countdown-secs {
+          font-family: 'Inter', sans-serif;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          color: #8a8378;
+          font-variant-numeric: tabular-nums;
+          min-width: 30px;
+          text-align: right;
+        }
+        .nc-countdown-secs .nc-secs-num { color: #5a554c; }
+
+        /* Filmstrip horizontal: tira scrolleable de noticias (N ilimitadas) */
+        .nc-filmstrip {
+          display: flex;
+          gap: 16px;
+          overflow-x: auto;
+          overflow-y: hidden;           /* evita el scrollbar vertical fantasma */
+          padding: 4px 2px 6px;
+          scroll-behavior: smooth;
+          scrollbar-width: none;        /* Firefox: sin barra (pasan solas) */
+          -ms-overflow-style: none;     /* Edge/IE legacy */
+          -webkit-overflow-scrolling: touch;
+        }
+        .nc-filmstrip::-webkit-scrollbar { display: none; }  /* Chromium/Safari: sin barra */
+        .nc-film {
+          position: relative;
+          flex: 0 0 232px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
-        }
-        .nc-mini {
-          display: grid;
-          grid-template-columns: 112px 1fr;
-          gap: 16px;
-          padding: 14px 18px 14px 14px;
           background: #fff;
-          border: 1px solid #ede9e0;
+          border: 1px solid rgba(31, 26, 23, 0.20);
           border-radius: 18px;
+          overflow: hidden;
           cursor: pointer;
           text-align: left;
-          transition: transform 0.28s ease, border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
-          position: relative;
-          overflow: hidden;
           font: inherit;
+          padding: 0;
+          transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
           --nc-color: #b71c1c;
         }
-        .nc-mini:hover, .nc-mini:focus-visible {
-          transform: translateX(4px);
-          background: #fdfcf0;
-          border-color: var(--nc-color);
+        .nc-film:hover, .nc-film:focus-visible {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 26px rgba(0,0,0,0.10);
           outline: none;
         }
-        .nc-mini.active {
-          background: #fdfcf0;
+        .nc-film.active {
           border-color: var(--nc-color);
-          box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+          box-shadow: 0 8px 22px rgba(0,0,0,0.10);
         }
-        .nc-mini-img {
-          width: 112px;
-          height: 92px;
-          border-radius: 16px;
+        .nc-film-img {
+          position: relative;
+          display: block;
+          width: 100%;
+          aspect-ratio: 16 / 10;
           overflow: hidden;
           background: #f0ede5;
-          display: block;
-          flex-shrink: 0;
         }
-        .nc-mini-img img {
+        .nc-film-img img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           display: block;
           transition: transform 0.5s ease;
         }
-        .nc-mini:hover .nc-mini-img img { transform: scale(1.06); }
-        .nc-mini-body {
+        .nc-film:hover .nc-film-img img { transform: scale(1.06); }
+        .nc-film-num {
+          position: absolute;
+          top: 8px;
+          left: 12px;
+          font-family: 'Inter', sans-serif;
+          font-weight: 800;
+          font-size: 22px;
+          line-height: 1;
+          color: #fff;
+          opacity: 0.92;
+          letter-spacing: -0.03em;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+          font-variant-numeric: tabular-nums;
+          pointer-events: none;
+        }
+        .nc-film-body {
+          padding: 13px 16px 16px;
           display: flex;
           flex-direction: column;
           gap: 6px;
-          justify-content: center;
-          min-width: 0;
         }
-        .nc-mini-meta {
+        .nc-film-meta {
           font-family: 'Inter', sans-serif;
           font-size: 9px;
           font-weight: 700;
@@ -780,7 +801,7 @@
           text-transform: uppercase;
           color: var(--nc-color);
         }
-        .nc-mini-title {
+        .nc-film-title {
           font-family: 'Inter', sans-serif;
           font-size: 13px;
           font-weight: 600;
@@ -792,12 +813,20 @@
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        @media (max-width: 900px) {
-          .news-bento { grid-template-columns: 1fr; gap: 20px; }
-          .nc-hero { min-height: 0; }
-          .nc-hero-body { padding: 28px 26px 32px; }
-          .nc-mini { grid-template-columns: 88px 1fr; }
-          .nc-mini-img { width: 88px; height: 72px; }
+        .nc-film-arrow {
+          position: absolute;
+          top: 8px;
+          right: 10px;
+          width: 1.3rem;
+          height: 1.3rem;
+          font-size: 0.75rem;
+        }
+        .nc-film:hover .nc-film-arrow { opacity: 1; transform: translate(2px, -2px); }
+        @media (max-width: 768px) {
+          .nc-feature { grid-template-columns: 1fr; min-height: 0; }
+          .nc-feature-media { min-height: 220px; max-height: 260px; }
+          .nc-feature-body { padding: 28px 26px 32px; }
+          .nc-film { flex: 0 0 78%; }
         }
 
         /* ── B2: Marcas — tira horizontal de paneles (split-panels) ── */
@@ -908,15 +937,24 @@
         @media (max-width: 768px) {
           .ms-strip { flex-direction: column; height: auto; min-height: 0; }
           .ms-panel {
-            flex: none; height: 130px;
+            flex: none;
+            min-height: 130px;          /* min-height (no height fijo) → se anima suave, no salta */
+            padding: 0;
             border-right: none;
             border-bottom: 1px solid rgba(255,255,255,0.12);
-            transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: min-height 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                        padding 0.65s cubic-bezier(0.22, 1, 0.36, 1);
           }
           .ms-panel:last-child { border-bottom: none; }
           .ms-bg { transform: none; }
-          .ms-panel.active { height: auto; min-height: 300px; padding: 28px 0; }
-          .ms-body { max-width: 90%; }
+          .ms-panel.active { min-height: 320px; padding: 28px 0; }
+          /* El cuerpo expande en sincronía con el panel (mismo easing + duración). */
+          .ms-body {
+            max-width: 90%;
+            transition: max-height 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity 0.45s ease 0.1s,
+                        margin-top 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+          }
           .ms-panel.active .ms-body { max-height: 360px; }
         }
 
@@ -1075,9 +1113,6 @@
 <a class="font-body text-sm tracking-widest uppercase text-on-surface hover:text-primary transition-colors duration-300" href="#nosotros">Nosotros</a>
 <a class="font-body text-sm tracking-widest uppercase text-on-surface hover:text-primary transition-colors duration-300" href="#contacto">Contacto</a>
 <a href="#" data-open-cv-modal class="ml-4 self-center inline-flex items-center justify-center bg-primary text-white font-body text-xs font-bold uppercase tracking-wider px-6 py-3 rounded shadow-sm transition-all duration-300 hover:bg-primary-container hover:scale-105 cursor-pointer" aria-label="Sumate al equipo">Sumate al equipo</a>
-<a href="#" data-open-admin-modal class="ml-2 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-300" aria-label="Ingresar como admin" title="Admin" rel="nofollow">
-  <span class="material-symbols-outlined" style="font-size:26px;">account_circle</span>
-</a>
 </div>
 <!-- Mobile Menu Toggle -->
 <button id="hamburger" class="md:hidden text-primary z-50 relative" aria-expanded="false" aria-label="Menú">
@@ -1165,6 +1200,12 @@
 <div id="news-grid" class="news-grid-featured"></div>
 </div>
 </section>
+<!-- Section seam: noticias → marcas -->
+<div class="section-seam" style="--seam-from:#f7f7f7; --seam-to:#fdfcf0;" aria-hidden="true">
+<span class="seam-line"></span>
+<span class="seam-glyph"></span>
+<span class="seam-line is-right"></span>
+</div>
 <!-- 5. Brands Section -->
 <section id="marcas" class="py-24 bg-[#fdfcf0]">
 <div class="max-w-7xl mx-auto px-8">
@@ -1175,7 +1216,7 @@
 </div>
 <div class="ms-strip" role="list" aria-label="Marcas del Grupo CEM">
 
-  <article class="ms-panel active" data-brand="carnave" tabindex="0" role="listitem" aria-expanded="true"
+  <article class="ms-panel" data-brand="carnave" tabindex="0" role="listitem" aria-expanded="false"
            style="--ms-accent:#b71c1c; --ms-accent-soft:rgba(183,28,28,0.42); --ms-img:url('assets/marcas/carnave.jpg'); --ms-pos:center 72%; --ms-grad:linear-gradient(180deg,#d24a4a,#b71c1c 55%,#7c1010);">
     <span class="ms-bg" aria-hidden="true"></span>
     <span class="ms-tint" aria-hidden="true"></span>
@@ -1260,9 +1301,10 @@
   const REDUCED   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ROTATE_MS = 5000;
 
-  let active = 0;
-  let timer  = null;
-  let pinned = false; // true cuando el usuario toma el control (hover/focus/tap/click)
+  let active  = -1;    // -1 = ninguna marca abierta
+  let timer   = null;
+  let pinned  = false; // true cuando el usuario toma el control (hover/focus/tap/click)
+  let engaged = false; // true cuando el usuario ya interactuó por primera vez
 
   function setActive(i) {
     active = (i + panels.length) % panels.length;
@@ -1273,41 +1315,56 @@
     });
   }
 
+  function clearActive() {
+    active = -1;
+    panels.forEach((p) => {
+      p.classList.remove('active');
+      p.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   function start() {
-    if (REDUCED || pinned || timer || !CAN_HOVER) return;
-    timer = setInterval(() => setActive(active + 1), ROTATE_MS);
+    // El auto-rotado SOLO arranca tras la primera interacción del usuario (engaged).
+    if (REDUCED || pinned || timer || !CAN_HOVER || !engaged) return;
+    timer = setInterval(() => setActive(active < 0 ? 0 : active + 1), ROTATE_MS);
   }
   function stop() {
     if (timer) { clearInterval(timer); timer = null; }
   }
 
-  setActive(0);
+  // Estado inicial: ninguna marca abierta (ni mobile ni desktop). Nada se mueve solo.
+  clearActive();
 
-  // Desktop (hover): pasar el mouse toma el control; salir de la tira reanuda.
+  // Desktop (hover): pasar el mouse abre esa marca y "enciende" el auto-rotado;
+  // salir de la tira reanuda el pase automático. NO hay autoplay al cargar.
   if (CAN_HOVER) {
     panels.forEach((p, idx) => {
-      p.addEventListener('mouseenter', () => { pinned = true; stop(); setActive(idx); });
-      p.addEventListener('focus',      () => { pinned = true; stop(); setActive(idx); });
+      p.addEventListener('mouseenter', () => { engaged = true; pinned = true; stop(); setActive(idx); });
+      p.addEventListener('focus',      () => { engaged = true; pinned = true; stop(); setActive(idx); });
     });
     strip.addEventListener('mouseleave', () => { pinned = false; start(); });
-    start();
   }
 
   // Click/tap: activa el panel. La navegación al sitio la maneja el <a class="ms-cta">.
   panels.forEach((p, idx) => {
     p.addEventListener('click', (e) => {
       if (e.target.closest('.ms-cta')) return; // dejar que el link navegue
+      engaged = true;
       setActive(idx);
       if (CAN_HOVER) { pinned = true; stop(); }
     });
     p.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(idx); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); engaged = true; setActive(idx); }
     });
   });
 })();
 </script>
-<!-- Section transition rule: marcas → nosotros -->
-<div class="max-w-7xl mx-auto px-8"><span id="rule-marcas-nosotros" class="section-rule"></span></div>
+<!-- Section seam: marcas → nosotros -->
+<div class="section-seam" style="--seam-from:#fdfcf0; --seam-to:#ffffff;" aria-hidden="true">
+<span class="seam-line"></span>
+<span class="seam-glyph"></span>
+<span class="seam-line is-right"></span>
+</div>
 <!-- 5. Nosotros Section -->
 <section id="nosotros" class="py-24 bg-white overflow-hidden">
 <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
