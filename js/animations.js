@@ -367,15 +367,11 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 });
 
-/* ─── 12. Nav hover: underline scaleX ──────────────────────────────────── */
-document.querySelectorAll('nav a[href^="#"]').forEach(link => {
-  const line = document.createElement('span');
-  line.style.cssText = 'position:absolute;bottom:-2px;left:0;right:0;height:2px;background:currentColor;transform-origin:center;transform:scaleX(0);pointer-events:none';
-  link.style.position = 'relative';
-  link.appendChild(line);
-  link.addEventListener('mouseenter', () => gsap.to(line, { scaleX: 1, duration: 0.25, ease: 'power2.out' }));
-  link.addEventListener('mouseleave', () => gsap.to(line, { scaleX: 0, duration: 0.2,  ease: 'power2.in'  }));
-});
+/* ─── 12. Nav hover underline — movido a CSS puro (::after :hover) ──────────
+   Antes era GSAP (mouseenter/mouseleave animando scaleX de un <span>). Si el
+   mouseleave no disparaba (p.ej. al clickear y scrollear con Lenis), el span
+   quedaba en scaleX:1 y el link parecía "seleccionado" permanentemente.
+   CSS :hover no puede quedar pegado. Ver la regla nav a::after en index.html. ── */
 
 /* ─── 13. Hero brand logos: canvas white-on-transparent processing ──────── */
 (function processHeroLogos() {
