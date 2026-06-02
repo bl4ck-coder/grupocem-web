@@ -278,7 +278,7 @@
           font-weight: 800;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          fill: #3a322c;
+          fill: #70685e;
         }
         .timeline-hit circle {
           fill: var(--brand-gold);
@@ -314,7 +314,7 @@
           font-weight: 800;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: #3a322c;
+          color: #70685e;
           margin-top: 8px;
         }
 
@@ -384,7 +384,7 @@
           font-style: italic;
           font-weight: 700;
           font-size: 20px;
-          color: #1f1a17;
+          color: #70685e;
           letter-spacing: -0.01em;
         }
         .footer-tagline {
@@ -393,7 +393,7 @@
           font-size: clamp(24px, 3vw, 36px);
           font-weight: 700;
           line-height: 1.2;
-          color: #1f1a17;
+          color: #70685e;
         }
 
         /* ── Timeline enhanced ── */
@@ -605,7 +605,7 @@
           border-radius: 24px;
           overflow: hidden;
           box-shadow: 0 6px 32px rgba(0,0,0,0.08);
-          min-height: 420px;
+          height: 492px;            /* fija: la altura NO depende de la imagen ni del texto → cero layout shift. Holgada para títulos largos (hasta ~4 líneas) sin recortar. */
           --nc-active-color: #b71c1c;
         }
         .nc-feature-media {
@@ -616,6 +616,8 @@
           will-change: clip-path;
         }
         .nc-feature-media img {
+          position: absolute;       /* fuera de flujo: la imagen nunca aporta altura intrínseca (independiente de su resolución) */
+          inset: 0;
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -653,8 +655,9 @@
           font-weight: 800;
           font-size: clamp(26px, 2.4vw, 34px);
           line-height: 1.2;
-          color: #121212;
+          color: #70685e;
           letter-spacing: -0.01em;
+          overflow: hidden;
         }
         .nc-feature-desc {
           font-family: 'Inter', sans-serif;
@@ -665,7 +668,8 @@
           overflow: hidden;
           transition: max-height 0.45s ease;
         }
-        .nc-feature-desc.expanded { max-height: 800px; }
+        /* Expande con scroll interno (no crece la card → no mueve el layout). */
+        .nc-feature-desc.expanded { max-height: 130px; overflow-y: auto; }
         .nc-feature-readmore {
           align-self: flex-start;
           background: none;
@@ -805,7 +809,7 @@
           font-family: 'Inter', sans-serif;
           font-size: 13px;
           font-weight: 600;
-          color: #2d2d2d;
+          color: #70685e;
           line-height: 1.4;
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -823,8 +827,8 @@
         }
         .nc-film:hover .nc-film-arrow { opacity: 1; transform: translate(2px, -2px); }
         @media (max-width: 768px) {
-          .nc-feature { grid-template-columns: 1fr; min-height: 0; }
-          .nc-feature-media { min-height: 220px; max-height: 260px; }
+          .nc-feature { grid-template-columns: 1fr; height: auto; }
+          .nc-feature-media { height: 220px; min-height: 0; max-height: none; }
           .nc-feature-body { padding: 28px 26px 32px; }
           .nc-film { flex: 0 0 78%; }
         }
@@ -1035,6 +1039,7 @@
         .cv-field input[type="text"],
         .cv-field input[type="email"],
         .cv-field input[type="tel"],
+        .cv-field select,
         .cv-field textarea {
           width: 100%; padding: 0.65rem 0.85rem;
           border: 1px solid #d8d8d8; border-radius: 8px;
@@ -1043,11 +1048,20 @@
           transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
         }
         .cv-field input:focus,
+        .cv-field select:focus,
         .cv-field textarea:focus {
           outline: none; border-color: #b71c1c; background: #fff;
           box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.12);
         }
         .cv-field textarea { resize: vertical; min-height: 84px; }
+        /* Flecha custom para el dropdown (consistente cross-browser) */
+        .cv-field select {
+          appearance: none; -webkit-appearance: none; -moz-appearance: none;
+          cursor: pointer; padding-right: 2.25rem;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23777' stroke-width='1.6' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+          background-repeat: no-repeat; background-position: right 0.85rem center;
+        }
+        .cv-field select:invalid { color: #8a8a8a; }
         .cv-file-wrap {
           display: flex; align-items: center; gap: 0.75rem;
           padding: 0.7rem 0.85rem; border: 1px dashed #c9c9c9;
@@ -1139,18 +1153,12 @@
   <source src="assets/video/GrupoCemVideo.mp4" type="video/mp4">
 </video>
 <div class="hero-overlay absolute inset-0"></div>
-<div class="relative z-10 flex flex-col items-center gap-4 px-4">
-  <!-- Rombo Grupo CEM — asset oficial -->
-  <img class="cem-rombo h-28 w-auto drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]" src="assets/logos/grupocem-rombo.png" alt="Grupo CEM">
-  <!-- Wordmark Grupo CEM (tipografía oficial del logo) -->
-  <div class="cem-wordmark-text drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]" aria-label="Grupo CEM">
-    <span class="cem-wm-grupo">GRUPO</span><span class="cem-wm-cem">CEM</span>
-  </div>
-  <!-- Subtítulo: Cadena de Valores -->
-  <div class="flex flex-col items-center gap-2 mt-2">
-    <h1 class="font-body text-sm sm:text-base md:text-lg text-white/90 font-medium uppercase tracking-[0.3em] leading-tight drop-shadow-2xl">Cadena de Valores</h1>
-    <div class="w-16 h-px bg-white/40 mt-1"></div>
-  </div>
+<div class="relative z-10 flex flex-col items-center gap-4 px-4" style="margin-top:-3rem;">
+  <!-- Logo oficial Grupo CEM completo (rombo + GRUPOCEM + CADENA DE VALORES). Versión
+       con el texto en blanco para que se lea sobre el video oscuro. -->
+  <h1 class="cem-hero-logo m-0">
+    <img class="w-auto drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]" src="assets/logos/grupocem-hero.png" alt="Grupo CEM — Cadena de Valores" style="height:clamp(7rem, 21vw, 13rem);">
+  </h1>
   <!-- Brand logos — parte del contenido hero -->
   <div class="flex items-center justify-center gap-8 md:gap-12 mt-4 flex-wrap">
     <a href="https://www.carnave.com.ar/" target="_blank" rel="noopener noreferrer" class="hero-brand-logo">
@@ -1474,10 +1482,8 @@ Trabajá con Nosotros
 <!-- Col 1: Brand -->
 <div class="space-y-5">
 <div class="flex flex-row items-center gap-3 -mt-[10px]">
-<img alt="Grupo CEM" class="h-12 w-auto object-contain" src="assets/logos/grupocem-rombo.png">
-<div class="cem-wordmark-text cem-wordmark-footer" aria-label="Grupo CEM">
-  <span class="cem-wm-grupo">GRUPO</span><span class="cem-wm-cem">CEM</span>
-</div>
+<img alt="Grupo CEM" class="h-[60px] w-auto object-contain" src="assets/logos/grupocem-rombo.png">
+<img class="w-auto object-contain" src="assets/logos/grupocem-wordmark.png" alt="Grupo CEM" style="height:2rem;">
 </div>
 <p class="font-body text-sm text-on-surface-variant leading-relaxed max-w-xs">Líderes en agroindustria desde Esperanza, impulsando el desarrollo productivo nacional con calidad internacional.</p>
 <div class="flex gap-3">
@@ -1659,6 +1665,29 @@ Trabajá con Nosotros
       </div>
 
       <div class="cv-field">
+        <label for="cv-localidad">Localidad</label>
+        <input type="text" id="cv-localidad" name="Localidad" autocomplete="address-level2">
+      </div>
+
+      <div class="cv-field">
+        <label for="cv-area">Me postulo para:</label>
+        <select id="cv-area" name="Me postulo para" required>
+          <option value="" disabled selected>Seleccioná un área…</option>
+          <option value="Administración">Administración</option>
+          <option value="Ventas">Ventas</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Producción">Producción</option>
+          <option value="Sistemas – IT">Sistemas – IT</option>
+          <option value="Otros (detallar)">Otros (detallar)</option>
+        </select>
+      </div>
+
+      <div class="cv-field" id="cv-otros-field" hidden>
+        <label for="cv-otros">¿Para qué área? (detallá)</label>
+        <input type="text" id="cv-otros" name="Área (otros)" autocomplete="off" placeholder="Ej. Logística, RR. HH., Mantenimiento…">
+      </div>
+
+      <div class="cv-field">
         <label for="cv-mensaje">Mensaje (opcional)</label>
         <textarea id="cv-mensaje" name="Mensaje" rows="3" placeholder="Contanos brevemente sobre tu perfil o el área que te interesa…"></textarea>
       </div>
@@ -1711,6 +1740,22 @@ Trabajá con Nosotros
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modal.classList.contains('open')) close();
     });
+
+    // "Otros (detallar)" → muestra un sub-campo para especificar el área.
+    const areaSelect = document.getElementById('cv-area');
+    const otrosField = document.getElementById('cv-otros-field');
+    const otrosInput = document.getElementById('cv-otros');
+    if (areaSelect && otrosField && otrosInput) {
+      const syncOtros = () => {
+        const show = areaSelect.value === 'Otros (detallar)';
+        otrosField.hidden = !show;
+        otrosInput.required = show;
+        if (!show) otrosInput.value = '';   // no enviar dato viejo si cambian de opción
+        else setTimeout(() => otrosInput.focus(), 50);
+      };
+      areaSelect.addEventListener('change', syncOtros);
+      syncOtros();
+    }
 
     if (fileInput && fileName) {
       fileInput.addEventListener('change', () => {
