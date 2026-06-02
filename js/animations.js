@@ -47,13 +47,13 @@ function revealOnScroll(selector, { stagger = 0, threshold = 0.15 } = {}) {
   const chars = [];
   Array.from(h1.childNodes).forEach(node => {
     if (node.nodeType === Node.TEXT_NODE) {
-      Array.from(node.textContent).forEach(c => chars.push({ char: c, italic: false }));
+      if (node.textContent.trim()) Array.from(node.textContent).forEach(c => chars.push({ char: c, italic: false }));
     } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'EM') {
       Array.from(node.textContent).forEach(c => chars.push({ char: c, italic: true }));
     }
   });
 
-  h1.textContent = '';
+  if (chars.length) h1.textContent = ''; // si el h1 envuelve la imagen del logo (sin texto), no lo vaciamos
   const charSpans = [];
   let currentWord = null;
   chars.forEach(({ char, italic }) => {
@@ -81,7 +81,7 @@ function revealOnScroll(selector, { stagger = 0, threshold = 0.15 } = {}) {
   const badge    = document.querySelector('header .w-16');
   const subtitle = document.querySelector('header .flex.flex-col.items-center.gap-2');
   const brandLogos = document.querySelectorAll('.hero-brand-logo');
-  const wordmark = document.querySelector('header .cem-wordmark-text');
+  const wordmark = document.querySelector('header .cem-wordmark-text, header .cem-wordmark-img, header .cem-hero-logo');
   const wmGrupo  = wordmark && wordmark.querySelector('.cem-wm-grupo');
   const wmCem    = wordmark && wordmark.querySelector('.cem-wm-cem');
   const tl = gsap.timeline({ delay: 0.2 });
@@ -282,7 +282,13 @@ if (medallion1974) {
     const io = new IntersectionObserver((entries) => {
       if (!entries[0].isIntersecting) return;
       io.disconnect();
-      gsap.from(Array.from(items), { y: 20, opacity: 0, stagger: 0.08, duration: 0.5, ease: 'power2.out' });
+      const feature = newsGrid.querySelector('.nc-feature');
+      const films = newsGrid.querySelectorAll('.nc-film');
+      // La card destacada entra con fade-up (no está recortada).
+      if (feature) gsap.from(feature, { y: 20, opacity: 0, duration: 0.5, ease: 'power2.out' });
+      // Los .nc-film viven en un contenedor con overflow-y:hidden: moverlos en Y los
+      // cortaría abajo y los dejaría desalineados durante el stagger. Solo fade-in.
+      if (films.length) gsap.from(Array.from(films), { opacity: 0, stagger: 0.08, duration: 0.5, ease: 'power2.out', delay: 0.1 });
     }, { threshold: 0.1 });
 
     io.observe(newsGrid);
