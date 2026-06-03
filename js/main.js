@@ -108,19 +108,7 @@ let _autoTween   = null;
 let _newsPaused  = false;
 let _newsInView  = false;
 let _cdFill      = null;
-let _cdSecs      = null;
 const NEWS_AUTO_MS   = 7000;
-const NEWS_AUTO_SECS = Math.round(NEWS_AUTO_MS / 1000);
-
-function setCountdownSecs(n) {
-  if (!_cdSecs) return;
-  _cdSecs.textContent = '';
-  const num = document.createElement('span');
-  num.className = 'nc-secs-num';
-  num.textContent = String(n);
-  _cdSecs.appendChild(num);
-  _cdSecs.appendChild(document.createTextNode('s'));
-}
 
 function buildFeatureShell() {
   const card = document.createElement('article');
@@ -300,11 +288,10 @@ function scrollFilmIntoView(index) {
   }
 }
 
-/* Countdown lineal: barra que se llena + segundos que decrecen entre noticias. */
+/* Countdown lineal: barra que se llena entre noticias. */
 function startCountdown() {
   if (_autoTween) { _autoTween.kill(); _autoTween = null; }
   if (_cdFill && window.gsap) gsap.set(_cdFill, { width: '0%' });
-  setCountdownSecs(NEWS_AUTO_SECS);
   if (!_newsInView || _newsPaused || _newsItems.length < 2 || !window.gsap) return;
 
   const state = { p: 0 };
@@ -314,7 +301,6 @@ function startCountdown() {
     ease: 'none',
     onUpdate: () => {
       if (_cdFill) gsap.set(_cdFill, { width: (state.p * 100) + '%' });
-      setCountdownSecs(Math.max(0, Math.ceil((1 - state.p) * NEWS_AUTO_SECS)));
     },
     onComplete: () => {
       if (!_newsInView || _newsPaused) return;
@@ -391,11 +377,9 @@ function renderNews(rows) {
     _cdFill.className = 'nc-countdown-fill';
     track.appendChild(_cdFill);
     cd.appendChild(track);
-    _cdSecs = null;
     newsGrid.appendChild(cd);
   } else {
     _cdFill = null;
-    _cdSecs = null;
   }
 
   // 3. Filmstrip horizontal — una card por noticia, scroll ilimitado.
