@@ -391,11 +391,7 @@ function renderNews(rows) {
     _cdFill.className = 'nc-countdown-fill';
     track.appendChild(_cdFill);
     cd.appendChild(track);
-    _cdSecs = document.createElement('span');
-    _cdSecs.className = 'nc-countdown-secs';
-    _cdSecs.setAttribute('aria-hidden', 'true');
-    cd.appendChild(_cdSecs);
-    setCountdownSecs(NEWS_AUTO_SECS);
+    _cdSecs = null;
     newsGrid.appendChild(cd);
   } else {
     _cdFill = null;
