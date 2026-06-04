@@ -193,9 +193,8 @@ revealOnScroll('#noticias span.text-primary, #noticias h2',        { stagger: 0.
 revealOnScroll('#marcas span.text-primary, #marcas h2',            { stagger: 0.1 });
 revealOnScroll('#nosotros span.text-primary, #nosotros h2',        { stagger: 0.1 });
 
-/* ─── 6. Nosotros body, pull-quote, CTA ─────────────────────────────────── */
+/* ─── 6. Nosotros body, pull-quote ──────────────────────────────────────── */
 revealOnScroll('#nosotros .space-y-4 p', { stagger: 0.1 });
-revealOnScroll('#nosotros .pt-6',        { stagger: 0 });
 revealOnScroll('#nosotros .pull-quote',  { stagger: 0 });
 
 /* ─── 7. Marcas tabs — y-only, never opacity ────────────────────────────── */
@@ -236,6 +235,28 @@ revealOnScroll('#nosotros .pull-quote',  { stagger: 0 });
   io.observe(accordion);
 })();
 
+/* ─── 7c. Marcas split-panels: entrada escalonada de los paneles ─────────
+   Suaviza el salto del header a la tira interactiva: los paneles "llegan" en
+   stagger en vez de aparecer como un muro de golpe. clearProps al terminar para
+   no interferir con el flex del hover/active. */
+(function revealBrandStrip() {
+  const strip = document.querySelector('.ms-strip');
+  if (!strip) return;
+  const panels = strip.querySelectorAll('.ms-panel');
+  if (!panels.length || REDUCED_MOTION) return; // reduced-motion: quedan visibles tal cual
+
+  gsap.set(panels, { opacity: 0, y: 38 });
+  const io = new IntersectionObserver((entries) => {
+    if (!entries[0].isIntersecting) return;
+    io.disconnect();
+    gsap.to(panels, {
+      opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+      stagger: 0.12, clearProps: 'transform,opacity',
+    });
+  }, { threshold: 0.2 });
+  io.observe(strip);
+})();
+
 /* ─── 8. Nosotros: img fade-in suave + parallax scrub ──────────────────── */
 const nosotrosImg = document.querySelector('#nosotros img.rounded-2xl');
 if (nosotrosImg) {
@@ -249,11 +270,25 @@ if (nosotrosImg) {
     );
   }, { threshold: 0.15 });
   fadeIo.observe(nosotrosImg);
+  // (sin parallax: movía la foto hacia arriba y dejaba ver una banda gris del
+  //  overlay sobre el área vacía del contenedor → quedaba como una sombra fea.)
+}
 
-  gsap.to(nosotrosImg, {
-    yPercent: -12, ease: 'none',
-    scrollTrigger: { trigger: '#nosotros', start: 'top bottom', end: 'bottom top', scrub: true },
-  });
+/* Encuadre animado: dibuja el marco dorado interior al entrar la foto en viewport. */
+const nosotrosFrame = document.querySelector('.nosotros-frame rect');
+if (nosotrosFrame) {
+  const L = nosotrosFrame.getTotalLength();
+  if (REDUCED_MOTION) {
+    gsap.set(nosotrosFrame, { strokeDasharray: L, strokeDashoffset: 0 });
+  } else {
+    gsap.set(nosotrosFrame, { strokeDasharray: L, strokeDashoffset: L });
+    const frameIo = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      frameIo.disconnect();
+      gsap.to(nosotrosFrame, { strokeDashoffset: 0, duration: 1.5, ease: 'power2.inOut', delay: 0.35 });
+    }, { threshold: 0.3 });
+    frameIo.observe(nosotrosFrame);
+  }
 }
 
 const medallion1974 = document.querySelector('#nosotros .medallion-1974');
@@ -450,42 +485,96 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 })();
 
-/* ─── 15. Timeline SVG: intersection reveal + draw + hits pulse ────────── */
+/* ─── 15. Timeline SVG: un cometa recorre los años (1974→2026) y enciende ──
+   cada hito al pasar por él. Reemplaza el stagger uniforme por un recorrido
+   temporal: la luz "viaja por la historia" y cada milestone se prende a su paso. */
 (function initTimeline() {
   const wrap = document.querySelector('.timeline-wrap');
+  const svg  = document.querySelector('.timeline-svg');
   const path = document.querySelector('.timeline-svg-path');
-  if (!wrap || !path) return;
+  if (!wrap || !svg || !path) return;
+
+  const SVGNS  = 'http://www.w3.org/2000/svg';
+  const hits   = [...document.querySelectorAll('.timeline-hit')];
+  const circles= [...document.querySelectorAll('.timeline-hit circle')];
+  const years  = [...document.querySelectorAll('.timeline-hit text.year')];
+  const labels = [...document.querySelectorAll('.timeline-hit text.label')];
+
+  const X0 = 40, X1 = 960, Y = 80;   // extremos y altura de la línea (coords del viewBox)
+  const milestones = hits.map((hit, i) => ({
+    circle: circles[i], year: years[i], label: labels[i],
+    x: parseFloat(hit.dataset.x), lit: false,
+  }));
+
+  // Reduced-motion: todo visible y estático, sin recorrido.
+  if (REDUCED_MOTION) {
+    gsap.set(path, { strokeDashoffset: 0 });
+    gsap.set([...hits], { opacity: 1 });
+    gsap.set([...circles], { scale: 1, transformOrigin: '50% 50%' });
+    gsap.set([...years, ...labels], { opacity: 1, y: 0 });
+    return;
+  }
 
   const pathLen = path.getTotalLength();
-  gsap.set(path, { strokeDasharray: pathLen, strokeDashoffset: pathLen });
+  gsap.set(path,    { strokeDasharray: pathLen, strokeDashoffset: pathLen });
+  gsap.set(hits,    { opacity: 1 });
+  gsap.set(circles, { scale: 0, transformOrigin: '50% 50%' });
+  gsap.set(years,   { opacity: 0, y: 16 });
+  gsap.set(labels,  { opacity: 0, y: -10 });
 
-  const hits = document.querySelectorAll('.timeline-hit');
-  const circles = document.querySelectorAll('.timeline-hit circle');
-  const years = document.querySelectorAll('.timeline-hit text.year');
-  const labels = document.querySelectorAll('.timeline-hit text.label');
+  // Cometa: halo difuso + núcleo caliente, ambos arrancan en 1974.
+  const glow = document.createElementNS(SVGNS, 'circle');
+  glow.setAttribute('class', 'tl-comet-glow');
+  glow.setAttribute('r', '11'); glow.setAttribute('cy', Y); glow.setAttribute('cx', X0);
+  const core = document.createElementNS(SVGNS, 'circle');
+  core.setAttribute('class', 'tl-comet-core');
+  core.setAttribute('r', '4.5'); core.setAttribute('cy', Y); core.setAttribute('cx', X0);
+  svg.appendChild(glow); svg.appendChild(core);
+  gsap.set([glow, core], { opacity: 0 });
 
-  gsap.set(hits,   { opacity: 0 });
-  gsap.set(circles,{ scale: 0, transformOrigin: '50% 50%' });
-  gsap.set(years,  { opacity: 0, y: 16 });
-  gsap.set(labels, { opacity: 0, y: -10 });
+  // Onda que se expande al encender un hito.
+  function ping(x) {
+    const ring = document.createElementNS(SVGNS, 'circle');
+    ring.setAttribute('class', 'tl-ping');
+    ring.setAttribute('cx', x); ring.setAttribute('cy', Y); ring.setAttribute('r', '6');
+    svg.insertBefore(ring, glow);
+    gsap.fromTo(ring,
+      { attr: { r: 6 }, opacity: 0.55 },
+      { attr: { r: 26 }, opacity: 0, duration: 0.9, ease: 'power2.out',
+        onComplete: () => ring.remove() });
+  }
+
+  function ignite(m) {
+    ping(m.x);
+    gsap.to(m.circle,    { scale: 1, duration: 0.5, ease: 'back.out(2.6)' });
+    gsap.fromTo(m.year,  { opacity: 0, y: 16 },  { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' });
+    gsap.fromTo(m.label, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.05 });
+  }
 
   const io = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     io.disconnect();
+
+    const driver = { x: X0 };
     const tl = gsap.timeline();
-    tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power3.out' });
-    tl.to(hits, { opacity: 1, duration: 0.2, stagger: 0.22 }, 0.1);
-    tl.to(circles, { scale: 1, duration: 0.55, stagger: 0.22, ease: 'back.out(2.2)' }, 0.1);
-    tl.to(years, { opacity: 1, y: 0, duration: 0.55, stagger: 0.22, ease: 'power3.out' }, 0.2);
-    tl.to(labels, { opacity: 1, y: 0, duration: 0.5, stagger: 0.22, ease: 'power2.out' }, 0.3);
-    // Subtle pulse on all dots after reveal
-    gsap.to(circles, {
-      scale: 1.15, duration: 1.4, ease: 'sine.inOut',
-      yoyo: true, repeat: -1, stagger: { each: 0.3, from: 'random' },
-      delay: 2.5,
-      transformOrigin: '50% 50%',
-    });
-  }, { threshold: 0.3 });
+    tl.to([glow, core], { opacity: 1, duration: 0.3 }, 0);
+    tl.to(path, { strokeDashoffset: 0, duration: 2.4, ease: 'power1.inOut' }, 0);
+    tl.to(driver, {
+      x: X1, duration: 2.4, ease: 'power1.inOut',
+      onUpdate() {
+        glow.setAttribute('cx', driver.x);
+        core.setAttribute('cx', driver.x);
+        for (const m of milestones) {
+          if (!m.lit && driver.x >= m.x - 3) { m.lit = true; ignite(m); }
+        }
+      },
+    }, 0);
+    // El cometa llega a 2026: destello final y queda como brillo FIJO en el último
+    // hito. Sin pulso perpetuo a propósito: animar r infinito sobre un elemento con
+    // filter:blur = repaint por frame para siempre → jank de scroll global.
+    tl.add(() => ping(X1));
+    tl.to(glow, { attr: { r: 13 }, opacity: 0.8, duration: 0.5, ease: 'power2.out' });
+  }, { threshold: 0.35 });
   io.observe(wrap);
 })();
 

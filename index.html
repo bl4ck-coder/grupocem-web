@@ -207,6 +207,53 @@
           box-shadow: 0 20px 40px -24px rgba(31, 26, 23, 0.40),
                       0 6px 14px -10px rgba(31, 26, 23, 0.14);
         }
+        /* Borde gentil consistente con la card de noticias (.nc-feature): define el
+           contorno de la foto y da prolijidad editorial sin pesar visualmente. */
+        .nosotros-img-wrap {
+          border: 1.5px solid rgba(31, 26, 23, 0.32);          /* contorno definido */
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45), /* hairline interior: doble filo */
+                      0 16px 40px -26px rgba(31, 26, 23, 0.45);  /* sombra suave anclada, sin banda dura */
+        }
+        /* Recubrimiento de la foto: vignette cálida + tinte al pie → profundidad y
+           la separa del fondo blanco. Va por ENCIMA de la imagen (z > img z-10). */
+        .nosotros-img-overlay {
+          position: absolute; inset: 0; z-index: 11; pointer-events: none;
+          border-radius: inherit;
+          background:
+            linear-gradient(180deg, rgba(31,26,23,0) 52%, rgba(31,26,23,0.30) 100%),
+            radial-gradient(135% 92% at 50% 10%, rgba(31,26,23,0) 58%, rgba(31,26,23,0.18) 100%);
+        }
+        /* Encuadre animado: marco dorado interior (passe-partout editorial) que se
+           "dibuja" al entrar en viewport. El stroke-draw lo dispara el JS. */
+        .nosotros-frame {
+          position: absolute; inset: 14px; z-index: 12; pointer-events: none;
+          overflow: visible;
+        }
+        .nosotros-frame rect {
+          fill: none;
+          stroke: var(--brand-gold);
+          stroke-width: 1.5;
+          opacity: 0.92;
+          stroke-dasharray: 400; stroke-dashoffset: 400;  /* oculto hasta que el JS mida y dibuje */
+        }
+        /* Recubrimiento del texto: panel editorial cálido que empareja la columna de
+           copy con la foto enmarcada y la levanta del fondo blanco. */
+        .nosotros-copy {
+          position: relative;
+          background: linear-gradient(165deg, #fffdf6 0%, #f6efe0 100%);
+          border: 1px solid rgba(31, 26, 23, 0.12);
+          border-radius: 20px;
+          padding: 3rem 2.75rem;
+          box-shadow: 0 14px 44px -22px rgba(31, 26, 23, 0.30);
+        }
+        .nosotros-copy::after {
+          content: ''; position: absolute; left: 0; top: 2.4rem; bottom: 2.4rem;
+          width: 3px; border-radius: 0 4px 4px 0;
+          background: linear-gradient(180deg, var(--brand-gold) 0%, #b71c1c 100%);
+        }
+        @media (max-width: 768px) {
+          .nosotros-copy { padding: 2rem 1.5rem; }
+        }
         /* ── Medallón 1974 ── */
         .medallion-1974 {
           position: absolute;
@@ -259,10 +306,28 @@
 
         /* ── Timeline ── */
         .timeline-wrap { margin-top: 4rem; }
+        .timeline-svg { overflow: visible; }  /* glow/ping del cometa pueden exceder el viewBox */
         .timeline-svg-path {
           stroke: var(--brand-gold);
           stroke-width: 1.5;
           fill: none;
+        }
+        /* Cometa que recorre la línea de tiempo: halo difuso + núcleo caliente. */
+        .timeline-svg .tl-comet-glow {
+          fill: var(--brand-gold);
+          opacity: 0.85;
+          filter: blur(3px);
+        }
+        .timeline-svg .tl-comet-core {
+          fill: #fff;
+          filter: drop-shadow(0 0 5px rgba(200,134,10,0.95))
+                  drop-shadow(0 0 9px rgba(183,28,28,0.6));
+        }
+        /* Onda que se expande cuando el cometa enciende un hito. */
+        .timeline-svg .tl-ping {
+          fill: none;
+          stroke: var(--brand-gold);
+          stroke-width: 1.5;
         }
         .timeline-hit text.year {
           font-family: 'DM Serif Display', 'Newsreader', serif;
@@ -821,6 +886,34 @@
           .nc-film { flex: 0 0 78%; }
         }
 
+        /* ── B2: Marcas — lead + pista de interacción (puente header → tira) ── */
+        .ms-lead {
+          max-width: 620px;
+          margin: 20px auto 0;
+          font-family: 'Inter', sans-serif;
+          font-size: 16px;
+          line-height: 1.7;
+          color: #6b6258;
+        }
+        .ms-hint {
+          display: inline-flex; align-items: center; gap: 8px;
+          margin-top: 22px;
+          font-family: 'Inter', sans-serif;
+          font-size: 11px; font-weight: 700;
+          letter-spacing: 2.5px; text-transform: uppercase;
+          color: var(--brand-gold-dk, #8c5c06);
+        }
+        .ms-hint .material-symbols-outlined {
+          font-size: 18px;
+          animation: ms-hint-pulse 2.4s ease-in-out infinite;
+        }
+        @keyframes ms-hint-pulse {
+          0%, 100% { transform: translateY(0); opacity: 0.65; }
+          50%      { transform: translateY(2px); opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ms-hint .material-symbols-outlined { animation: none; opacity: 0.85; }
+        }
         /* ── B2: Marcas — tira horizontal de paneles (split-panels) ── */
         .ms-strip {
           display: flex;
@@ -861,10 +954,10 @@
           background: radial-gradient(125% 95% at 50% 45%,
                        var(--ms-accent-soft, rgba(0,0,0,0.25)) 0%,
                        var(--ms-accent, #444) 100%);
-          opacity: 1;
+          opacity: 0.68;
           transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .ms-panel.active .ms-tint { opacity: 0.5; }
+        .ms-panel.active .ms-tint { opacity: 0.38; }
         /* Capa 2 — scrim para legibilidad del texto abajo. */
         .ms-scrim {
           position: absolute; inset: 0; z-index: 2;
@@ -878,26 +971,49 @@
           opacity: 0.97;
           transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Carnave es un emblema (nombre dentro del badge): NO se blanquea
-           (quedaría un hexágono blanco sólido). Se muestra en su color + sombra. */
-        .ms-panel[data-brand="carnave"] .ms-logo {
-          height: 60px;
-          filter: drop-shadow(0 2px 12px rgba(0,0,0,0.6));
-          -webkit-filter: drop-shadow(0 2px 12px rgba(0,0,0,0.6));
-        }
+        .ms-panel[data-brand="carnave"] .ms-logo { height: 64px; }
         .ms-panel[data-brand="avigan"]  .ms-logo { height: 66px; }
         .ms-panel[data-brand="ovo"]     .ms-logo { height: 66px; }
         .ms-panel.active .ms-logo { transform: scale(1.08); }
+
+        /* Pista de interacción (affordance): chevron sutil que invita a abrir el panel,
+           con un leve "bob". Se desvanece cuando el panel está activo. */
+        .ms-cue {
+          position: absolute; z-index: 3;
+          bottom: 24px; left: 50%;
+          width: 36px; height: 36px;
+          display: grid; place-items: center;
+          color: #fff; border-radius: 50%;
+          background: rgba(255,255,255,0.12);
+          border: 1px solid rgba(255,255,255,0.55);
+          -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+          transform: translateX(-50%);
+          opacity: 0.92;
+          transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          animation: ms-cue-bob 2.6s ease-in-out infinite;
+          pointer-events: none;
+        }
+        .ms-cue .material-symbols-outlined { font-size: 22px; }
+        .ms-panel.active .ms-cue { opacity: 0; transform: translate(-50%, 10px); }
+        @keyframes ms-cue-bob {
+          0%, 100% { transform: translate(-50%, 0); }
+          50%      { transform: translate(-50%, 5px); }
+        }
+
+        /* Body anclado: posición absoluta por debajo del logo centrado, así el logo
+           NO se mueve al abrir (en mobile vuelve a flujo normal — ver media query). */
         .ms-body {
-          position: relative; z-index: 3;
+          position: absolute; z-index: 3;
+          left: 50%; top: 50%; margin-top: 56px;
+          transform: translateX(-50%);
           width: 100%; max-width: 380px;
           text-align: center;
           padding: 0 18px;
           max-height: 0; opacity: 0; overflow: hidden;
           transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-                      opacity 0.55s ease, margin-top 0.55s ease;
+                      opacity 0.55s ease;
         }
-        .ms-panel.active .ms-body { max-height: 280px; opacity: 1; margin-top: 18px; }
+        .ms-panel.active .ms-body { max-height: 280px; opacity: 1; }
         .ms-tag {
           display: block;
           font-family: 'Newsreader', serif; font-style: italic;
@@ -942,12 +1058,16 @@
           .ms-panel.active { min-height: 320px; padding: 28px 0; }
           /* El cuerpo expande en sincronía con el panel (mismo easing + duración). */
           .ms-body {
+            position: static; transform: none;
+            left: auto; top: auto; margin-top: 0;
             max-width: 90%;
             transition: max-height 0.65s cubic-bezier(0.22, 1, 0.36, 1),
                         opacity 0.45s ease 0.1s,
                         margin-top 0.65s cubic-bezier(0.22, 1, 0.36, 1);
           }
-          .ms-panel.active .ms-body { max-height: 360px; }
+          .ms-panel.active .ms-body { max-height: 360px; margin-top: 16px; }
+          /* En mobile el cue se ubica abajo de cada banda */
+          .ms-cue { bottom: 16px; width: 32px; height: 32px; }
         }
 
         /* Reduced-motion: sin transiciones en la tira (spec §3) */
@@ -1159,7 +1279,7 @@
       <img src="assets/logos/compania-avicola.png" alt="Cía Avícola" style="height:32px;width:auto;filter:brightness(0) invert(1);opacity:0.7;">
     </a>
     <a href="https://ovofood.com.ar/" target="_blank" rel="noopener noreferrer" class="hero-brand-logo">
-      <img src="assets/logos/ovofood.png" alt="Ovo Food" style="height:48px;width:auto;margin-top:5px;filter:brightness(0) invert(1);opacity:0.7;">
+      <img src="assets/logos/ovofood-mark.png" alt="Ovo Food" style="height:31px;width:auto;filter:brightness(0) invert(1);opacity:0.7;">
     </a>
   </div>
 </div>
@@ -1175,12 +1295,12 @@
 <section id="kpi-band" class="bg-primary py-16">
 <div class="max-w-3xl mx-auto px-8 grid grid-cols-2 gap-12 text-center">
 <div class="kpi-item space-y-2">
-<p class="text-6xl text-white" data-count="50" data-suffix="+"><span class="kpi-odometer" aria-label="50+"></span></p>
-<p class="font-label text-xs text-white/80 uppercase tracking-widest font-bold">Años de Trayectoria</p>
+<p class="text-6xl text-white" data-count="4"><span class="kpi-odometer" aria-label="4"></span></p>
+<p class="font-label text-xs text-white/80 uppercase tracking-widest font-bold">Marcas</p>
 </div>
 <div class="kpi-item space-y-2">
-<p class="text-6xl text-white" data-count="700" data-suffix="+"><span class="kpi-odometer" aria-label="700+"></span></p>
-<p class="font-label text-xs text-white/80 uppercase tracking-widest font-bold">Colaboradores Directos</p>
+<p class="text-6xl text-white" data-count="600" data-suffix="+"><span class="kpi-odometer" aria-label="600+"></span></p>
+<p class="font-label text-xs text-white/80 uppercase tracking-widest font-bold">Colaboradores</p>
 </div>
 </div>
 </section>
@@ -1208,6 +1328,8 @@
 <div class="mb-12 text-center">
 <span class="text-primary font-bold tracking-[0.3em] text-xs uppercase">02 — Excelencia Productiva</span>
 <h2 class="font-serif text-5xl text-[#70685e] mt-4 font-bold">Nuestras Marcas</h2>
+<p class="ms-lead">Cuatro empresas, una sola cadena de valor: del grano a la mesa. Cada marca con su propia identidad, todas parte de Grupo CEM.</p>
+<p class="ms-hint"><span class="material-symbols-outlined" aria-hidden="true">touch_app</span>Pasá el cursor o tocá cada panel para descubrir la marca</p>
 </div>
 </div>
 <div class="ms-strip" role="list" aria-label="Marcas del Grupo CEM">
@@ -1217,7 +1339,8 @@
     <span class="ms-bg" aria-hidden="true"></span>
     <span class="ms-tint" aria-hidden="true"></span>
     <span class="ms-scrim" aria-hidden="true"></span>
-    <img class="ms-logo" src="assets/logos/carnave-marca.png" alt="Carnave">
+    <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
+    <img class="ms-logo" src="assets/logos/carnave-outline.png" alt="Carnave">
     <div class="ms-body">
       <span class="ms-tag">Desde 1974 · Integración avícola</span>
       <div class="ms-pills">
@@ -1235,6 +1358,7 @@
     <span class="ms-bg" aria-hidden="true"></span>
     <span class="ms-tint" aria-hidden="true"></span>
     <span class="ms-scrim" aria-hidden="true"></span>
+    <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/avigan-marca.png" alt="Avigan">
     <div class="ms-body">
       <span class="ms-tag">Agronegocios · Nutrición · Laboratorio</span>
@@ -1253,6 +1377,7 @@
     <span class="ms-bg" aria-hidden="true"></span>
     <span class="ms-tint" aria-hidden="true"></span>
     <span class="ms-scrim" aria-hidden="true"></span>
+    <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/compania-avicola.png" alt="Cía Avícola">
     <div class="ms-body">
       <span class="ms-tag">120M huevos/año · FSSC 22000</span>
@@ -1271,6 +1396,7 @@
     <span class="ms-bg" aria-hidden="true"></span>
     <span class="ms-tint" aria-hidden="true"></span>
     <span class="ms-scrim" aria-hidden="true"></span>
+    <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/ovofood.png" alt="Ovo Food">
     <div class="ms-body">
       <span class="ms-tag">Ovoproductos industriales · CHEF · VITAL</span>
@@ -1364,7 +1490,7 @@
 <!-- 5. Nosotros Section -->
 <section id="nosotros" class="py-24 bg-white overflow-hidden">
 <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-<div class="order-2 md:order-1 space-y-8">
+<div class="order-2 md:order-1 space-y-8 nosotros-copy">
 <span class="text-primary font-bold tracking-[0.3em] text-xs uppercase">03 — Nuestra Historia</span>
 <div class="pull-quote">
   <span class="pull-quote-rule" aria-hidden="true"></span>
@@ -1374,17 +1500,14 @@
 <p>Desde nuestra fundación en Esperanza, Santa Fe, hace más de 50 años, en Grupo CEM hemos evolucionado de un emprendimiento familiar a un referente indiscutido del sector agroindustrial argentino.</p>
 <p>Nuestra visión de 'Cadena de Valores' se fundamenta en la integración vertical absoluta: desde el grano hasta la mesa de las familias, garantizando trazabilidad y compromiso social.</p>
 </div>
-<div class="pt-6">
-<button type="button" data-open-cv-modal class="bg-primary text-white px-10 py-4 rounded-xl font-bold flex items-center gap-3 hover:bg-red-800 hover:shadow-xl hover:-translate-y-1 transition-all shadow-lg uppercase tracking-widest text-sm cursor-pointer">
-                    TRABAJÁ CON NOSOTROS
-                    <span class="material-symbols-outlined">description</span>
-</button>
-</div>
 </div>
 <div class="order-1 md:order-2 relative">
-<div class="absolute -inset-4 bg-primary/10 rounded-full blur-3xl"></div>
 <div class="nosotros-img-wrap relative z-10 overflow-hidden rounded-2xl">
 <img alt="Vista aérea del complejo productivo avícola del Grupo CEM en Humboldt, Santa Fe" class="nosotros-img relative z-10 rounded-2xl w-full aspect-square object-cover" src="assets/nosotros/grupocem-nosotros.jpg" onerror="this.src='assets/nosotros/grupocem-aerial.jpg'">
+<span class="nosotros-img-overlay" aria-hidden="true"></span>
+<svg class="nosotros-frame" viewBox="0 0 100 100" aria-hidden="true">
+<rect x="1.5" y="1.5" width="97" height="97" rx="1.2" vector-effect="non-scaling-stroke"></rect>
+</svg>
 </div>
 <div class="medallion-1974 hidden md:flex" aria-label="Fundación 1974 en Esperanza, Santa Fe">
 <span class="mdl-eyebrow">Año de inicio</span>
@@ -1417,7 +1540,7 @@
 <g class="timeline-hit" data-x="960">
 <circle cx="960" cy="80" r="6" />
 <text class="year" x="960" y="50" text-anchor="middle">2026</text>
-<text class="label" x="960" y="104" text-anchor="end"><tspan x="960">4 marcas</tspan><tspan x="960" dy="14">600+ empleados</tspan></text>
+<text class="label" x="960" y="104" text-anchor="end"><tspan x="960">4 marcas</tspan><tspan x="960" dy="14">600+ colaboradores</tspan></text>
 </g>
 </svg>
 </div>
@@ -1437,7 +1560,7 @@
 </li>
 <li class="timeline-mobile-item">
 <p class="tm-year">2026</p>
-<p class="tm-label">4 marcas · 600+ empleados</p>
+<p class="tm-label">4 marcas · 600+ colaboradores</p>
 </li>
 </ul>
 </div>
