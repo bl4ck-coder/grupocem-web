@@ -8,7 +8,7 @@ function validateNoticiaInput(body) {
   if (typeof body.titulo !== 'string' || !body.titulo.trim() || body.titulo.length > 100) errs.push('titulo');
   if (typeof body.fecha !== 'string' || !body.fecha.trim() || body.fecha.length > 30) errs.push('fecha');
   if (typeof body.marca !== 'string' || !body.marca.trim() || body.marca.length > 50) errs.push('marca');
-  if (typeof body.descripcion !== 'string' || !body.descripcion.trim() || body.descripcion.length > 280) errs.push('descripcion');
+  if (typeof body.descripcion !== 'string' || !body.descripcion.trim() || body.descripcion.length > 500) errs.push('descripcion');
   if (typeof body.imagen !== 'string' || !/^https?:\/\//.test(body.imagen)) errs.push('imagen');
   if (typeof body.imagenPathname !== 'string' || !body.imagenPathname) errs.push('imagenPathname');
   if (body.link != null) {
