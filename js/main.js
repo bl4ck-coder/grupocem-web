@@ -171,6 +171,20 @@ function buildFeatureShell() {
       gsap.fromTo(desc, { opacity: 0.4 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
     }
   });
+
+  // Toda la card es clickeable hacia el link externo. Se maneja por JS (no por un
+  // overlay <a>) porque la animación GSAP del body crea un stacking context que
+  // dejaría al botón "Leer más" debajo de un overlay. El botón y la propia flecha
+  // ↗ se excluyen para no navegar de más / no duplicar la apertura.
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.nc-feature-readmore')) return; // control interno
+    if (e.target.closest('.nc-hero-link')) return;        // la flecha abre sola
+    const a = card.querySelector('.nc-hero-link');
+    if (a && !a.hidden) {
+      const href = a.getAttribute('href');
+      if (href) window.open(href, '_blank', 'noopener,noreferrer');
+    }
+  });
   return card;
 }
 
@@ -211,8 +225,9 @@ function updateFeature(card, item, index) {
   }
 
   const linkAnchor = card.querySelector('.nc-hero-link');
+  const hasLink = !!(item.link && /^https?:\/\//.test(item.link));
   if (linkAnchor) {
-    if (item.link && /^https?:\/\//.test(item.link)) {
+    if (hasLink) {
       linkAnchor.href = item.link;
       linkAnchor.hidden = false;
     } else {
@@ -220,6 +235,8 @@ function updateFeature(card, item, index) {
       linkAnchor.hidden = true;
     }
   }
+  // Card entera clickeable (cursor + handler) solo cuando hay link.
+  card.classList.toggle('nc-clickable', hasLink);
 }
 
 function buildFilmItem(item, index) {

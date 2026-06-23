@@ -753,6 +753,34 @@
         }
         .nc-feature-readmore:hover { opacity: 1; transform: translateX(3px); }
 
+        /* Indicador de enlace externo (círculo con ↗) — compartido card destacada + filmstrip */
+        .news-link-arrow {
+          background: rgba(0, 0, 0, 0.55);
+          color: #f5f0e8;
+          width: 1.6rem;
+          height: 1.6rem;
+          display: grid;
+          place-items: center;
+          border-radius: 999px;
+          font-size: 0.85rem;
+          opacity: 0.85;
+          transition: transform 180ms ease, opacity 180ms ease;
+        }
+        /* La flecha ↗ vive en la esquina como indicador + ancla accesible (tab/Enter,
+           click-medio → nueva pestaña). El click en CUALQUIER parte de la card lo
+           maneja un handler JS en .nc-feature: la animación GSAP del body deja un
+           transform inline que crea un stacking context, así que un overlay <a> no
+           puede quedar por encima del botón "Leer más" de forma fiable. */
+        .nc-hero-link {
+          position: absolute;
+          top: 0.85rem;
+          right: 0.85rem;
+          z-index: 2;
+          text-decoration: none;
+        }
+        .nc-hero-link:hover .news-link-arrow { opacity: 1; transform: translate(2px, -2px); }
+        .nc-feature.nc-clickable { cursor: pointer; }
+
         /* Countdown lineal: barra que se llena entre noticias */
         .nc-countdown {
           display: flex;
