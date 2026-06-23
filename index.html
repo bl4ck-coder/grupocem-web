@@ -1625,34 +1625,19 @@
 <footer id="contacto" class="w-full bg-[#fdfcf0] text-on-surface relative">
 <div class="footer-rule"></div>
 
-<!-- Tagline band -->
-<div class="max-w-screen-2xl mx-auto px-10 md:px-20 pt-20 pb-12">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-<div>
-<span class="footer-eyebrow">04 — Contacto</span>
-<p class="footer-tagline mt-3">Desde el grano hasta la mesa<br>de las familias.</p>
-</div>
-<div class="text-left md:text-right">
-<p class="font-body text-xs uppercase tracking-[0.3em] text-on-surface-variant font-bold">Sumate al equipo</p>
-<a href="#" data-open-cv-modal class="inline-flex items-center gap-2 mt-3 bg-primary text-white px-6 py-3 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-red-800 transition-colors shadow-md cursor-pointer">
-Trabajá con Nosotros
-<span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-
-<div class="footer-rule" style="opacity:0.3;"></div>
-
 <!-- Main 4-col grid -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-16 px-10 md:px-20 py-16 w-full max-w-screen-2xl mx-auto items-start">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-x-12 gap-y-12 px-10 md:px-20 py-16 w-full max-w-screen-2xl mx-auto items-start">
 <!-- Col 1: Brand -->
-<div class="space-y-5">
+<div class="space-y-5 sm:col-span-2 lg:col-span-4">
 <div class="flex flex-row items-center gap-3 -mt-[10px]">
 <img alt="Grupo CEM" class="h-[60px] w-auto object-contain" src="assets/logos/grupocem-rombo.png">
 <img class="w-auto object-contain" src="assets/logos/grupocem-wordmark.png" alt="Grupo CEM" style="height:2rem;">
 </div>
-<p class="font-body text-sm text-on-surface-variant leading-relaxed max-w-xs">Líderes en agroindustria desde Esperanza, impulsando el desarrollo productivo nacional con calidad internacional.</p>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed max-w-xs">Líderes en agroindustria, impulsando el desarrollo productivo nacional con calidad internacional.</p>
+<a href="#" data-open-cv-modal class="inline-flex items-center gap-2 w-fit bg-primary text-white px-6 py-3 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-red-800 transition-colors shadow-md cursor-pointer" aria-label="Sumate al equipo">
+Trabajá con Nosotros
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
 <div class="flex gap-3">
 <button onclick="(async()=>{try{await navigator.share({title:'GRUPO CEM | Cadena de Valores',url:location.href})}catch{navigator.clipboard.writeText(location.href)}})()" class="w-9 h-9 rounded-full border border-on-surface/15 bg-white hover:bg-[color:var(--brand-gold)] hover:border-transparent flex items-center justify-center text-on-surface hover:text-white transition-all cursor-pointer" aria-label="Compartir">
 <span class="material-symbols-outlined text-lg">share</span>
@@ -1660,7 +1645,7 @@ Trabajá con Nosotros
 </div>
 </div>
 <!-- Col 2: Nav -->
-<div class="space-y-5">
+<div class="space-y-5 lg:col-span-2">
 <h5 class="footer-heading">Navegación</h5>
 <ul class="space-y-3 font-body text-sm text-on-surface-variant">
 <li><a class="hover:text-primary transition-all hover:translate-x-1 inline-block" href="#nosotros">Nosotros</a></li>
@@ -1670,7 +1655,7 @@ Trabajá con Nosotros
 </ul>
 </div>
 <!-- Col 3: Brands -->
-<div class="space-y-5">
+<div class="space-y-5 lg:col-span-2">
 <h5 class="footer-heading">Marcas</h5>
 <ul class="space-y-3 font-body text-sm text-on-surface-variant">
 <li><a class="hover:text-primary transition-all hover:translate-x-1 inline-block" href="https://www.carnave.com.ar/" target="_blank" rel="noopener noreferrer">Carnave</a></li>
@@ -1680,7 +1665,7 @@ Trabajá con Nosotros
 </ul>
 </div>
 <!-- Col 4: Contact -->
-<div class="space-y-5">
+<div class="space-y-5 lg:col-span-2">
 <h5 class="footer-heading">Dónde estamos</h5>
 <ul class="space-y-3 font-body text-sm text-on-surface-variant">
 <li class="flex items-start gap-3">
@@ -1695,6 +1680,18 @@ Trabajá con Nosotros
 <span class="material-symbols-outlined text-[color:var(--brand-gold)] text-xl">mail</span>
 <a href="mailto:info@grupocem.com.ar" class="hover:text-primary transition-colors">info@grupocem.com.ar</a>
 </li>
+</ul>
+</div>
+<!-- Col 5: Seguinos -->
+<div class="space-y-5 lg:col-span-2">
+<h5 class="footer-heading">Seguinos</h5>
+<ul class="space-y-3 font-body text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-all hover:translate-x-1 inline-flex items-center gap-2" href="https://www.instagram.com/grupo_cem.arg/" target="_blank" rel="noopener noreferrer">
+<svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 shrink-0" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.242 1.308 3.608.058 1.266.069 1.646.069 4.85 0 3.204-.012 3.584-.07 4.85-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.242 1.246-3.608 1.308-1.266.058-1.646.069-4.85.069-3.204 0-3.584-.012-4.85-.07-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12c0-3.204.012-3.584.07-4.85.062-1.366.334-2.633 1.308-3.608.974-.974 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0 1.802c-3.15 0-3.522.012-4.764.069-.96.044-1.482.204-1.83.339-.46.179-.788.392-1.132.736-.344.344-.557.672-.736 1.132-.135.348-.295.87-.339 1.83-.057 1.242-.069 1.614-.069 4.764 0 3.15.012 3.522.069 4.764.044.96.204 1.482.339 1.83.179.46.392.788.736 1.132.344.344.672.557 1.132.736.348.135.87.295 1.83.339 1.242.057 1.614.069 4.764.069 3.15 0 3.522-.012 4.764-.069.96-.044 1.482-.204 1.83-.339.46-.179.788-.392 1.132-.736.344-.344.557-.672.736-1.132.135-.348.295-.87.339-1.83.057-1.242.069-1.614.069-4.764 0-3.15-.012-3.522-.069-4.764-.044-.96-.204-1.482-.339-1.83-.179-.46-.392-.788-.736-1.132-.344-.344-.672-.557-1.132-.736-.348-.135-.87-.295-1.83-.339-1.242-.057-1.614-.069-4.764-.069zm0 3.064a4.971 4.971 0 100 9.942 4.971 4.971 0 000-9.942zm0 8.198a3.227 3.227 0 110-6.454 3.227 3.227 0 010 6.454zm6.336-8.394a1.162 1.162 0 11-2.324 0 1.162 1.162 0 012.324 0z"/></svg>
+Instagram</a></li>
+<li><a class="hover:text-primary transition-all hover:translate-x-1 inline-flex items-center gap-2" href="https://www.linkedin.com/company/grupocem-argentina/" target="_blank" rel="noopener noreferrer">
+<svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 shrink-0" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+LinkedIn</a></li>
 </ul>
 </div>
 </div>
