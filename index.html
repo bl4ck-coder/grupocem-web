@@ -339,9 +339,9 @@
         }
         .timeline-hit text.label {
           font-family: 'Inter', sans-serif;
-          font-size: 11px;
+          font-size: 9px;
           font-weight: 800;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           fill: #70685e;
         }
@@ -1048,6 +1048,14 @@
           font-size: 15px; opacity: 0.92; margin-bottom: 14px;
           text-shadow: 0 1px 8px rgba(0,0,0,0.6);
         }
+        /* Subtexto opcional bajo la frase (ej. líneas CHEF/VITAL de Ovofood) */
+        .ms-tag-sub {
+          display: block;
+          font-family: 'Inter', sans-serif;
+          font-size: 11px; line-height: 1.5; opacity: 0.85;
+          margin: -8px 0 14px;
+          text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+        }
         .ms-pills { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
         .ms-pill {
           font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
@@ -1356,7 +1364,6 @@
 <div class="mb-12 text-center">
 <span class="text-primary font-bold tracking-[0.3em] text-xs uppercase">02 — Excelencia Productiva</span>
 <h2 class="font-serif text-5xl text-[#70685e] mt-4 font-bold">Nuestras Marcas</h2>
-<p class="ms-lead">Cuatro empresas, una sola cadena de valor: del grano a la mesa. Cada marca con su propia identidad, todas parte de Grupo CEM.</p>
 <p class="ms-hint"><span class="material-symbols-outlined" aria-hidden="true">touch_app</span>Pasá el cursor o tocá cada panel para descubrir la marca</p>
 </div>
 </div>
@@ -1370,12 +1377,12 @@
     <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/carnave-outline.png" alt="Carnave">
     <div class="ms-body">
-      <span class="ms-tag">Desde 1974 · Integración avícola</span>
+      <span class="ms-tag">Frescos para tu día</span>
       <div class="ms-pills">
-        <span class="ms-pill">Frigorífico propio</span>
-        <span class="ms-pill">Exportación</span>
-        <span class="ms-pill">Tiendas propias</span>
-        <span class="ms-pill">Franquicias</span>
+        <span class="ms-pill">Integración avícola</span>
+        <span class="ms-pill">Producción primaria</span>
+        <span class="ms-pill">Frigorífico</span>
+        <span class="ms-pill">Red de Franquicias</span>
       </div>
       <a class="ms-cta" href="https://www.carnave.com.ar/" target="_blank" rel="noopener noreferrer">Visitar sitio <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></a>
     </div>
@@ -1389,12 +1396,12 @@
     <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/avigan-marca.png" alt="Avigan">
     <div class="ms-body">
-      <span class="ms-tag">Agronegocios · Nutrición · Laboratorio</span>
+      <span class="ms-tag">Integración agroindustrial.</span>
       <div class="ms-pills">
-        <span class="ms-pill">Nutrición</span>
-        <span class="ms-pill">Laboratorio</span>
-        <span class="ms-pill">Acopio</span>
-        <span class="ms-pill">Asesoramiento</span>
+        <span class="ms-pill">Nutrición Animal</span>
+        <span class="ms-pill">Agronegocios</span>
+        <span class="ms-pill">Acopio de Cereales</span>
+        <span class="ms-pill">Aceite de Soja y Subproductos</span>
       </div>
       <a class="ms-cta" href="https://avigan.com.ar/" target="_blank" rel="noopener noreferrer">Visitar sitio <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></a>
     </div>
@@ -1408,12 +1415,12 @@
     <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/compania-avicola.png" alt="Cía Avícola">
     <div class="ms-body">
-      <span class="ms-tag">120M huevos/año · FSSC 22000</span>
+      <span class="ms-tag">Desde 1996 generando valor agregado al huevo…</span>
       <div class="ms-pills">
-        <span class="ms-pill">Supermercados</span>
-        <span class="ms-pill">Huevo con fecha y marca</span>
-        <span class="ms-pill">Suplementos vitamínicos</span>
-        <span class="ms-pill">Gastronomía</span>
+        <span class="ms-pill">FSSC 22000</span>
+        <span class="ms-pill">Industria alimenticia local</span>
+        <span class="ms-pill">Mercado externo</span>
+        <span class="ms-pill">Productos B2B y B2C</span>
       </div>
       <a class="ms-cta" href="https://www.ciaavicola.com.ar/" target="_blank" rel="noopener noreferrer">Visitar sitio <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></a>
     </div>
@@ -1427,12 +1434,15 @@
     <span class="ms-cue" aria-hidden="true"><span class="material-symbols-outlined">expand_more</span></span>
     <img class="ms-logo" src="assets/logos/ovofood.png" alt="Ovo Food">
     <div class="ms-body">
-      <span class="ms-tag">Ovoproductos industriales · CHEF · VITAL</span>
+      <span class="ms-tag">Ovoproductos para el consumo final</span>
+      <span class="ms-tag-sub">Línea CHEF: ovoproductos de uso culinario<br>Línea VITAL: productos y suplementos protéicos</span>
       <div class="ms-pills">
-        <span class="ms-pill">Ovoproductos industrializados</span>
-        <span class="ms-pill">Deshidratado</span>
-        <span class="ms-pill">Línea CHEF</span>
-        <span class="ms-pill">Línea VITAL</span>
+        <span class="ms-pill">Canal HO.RE.CA.</span>
+        <span class="ms-pill">Gastronomía</span>
+        <span class="ms-pill">Nutrición</span>
+        <span class="ms-pill">Deportistas</span>
+        <span class="ms-pill">Fitness</span>
+        <span class="ms-pill">Lifestyle</span>
       </div>
       <a class="ms-cta" href="https://ovofood.com.ar/" target="_blank" rel="noopener noreferrer">Visitar sitio <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></a>
     </div>
@@ -1525,8 +1535,8 @@
   <h2 class="pull-quote-text">Medio siglo forjando la industria nacional.</h2>
 </div>
 <div class="font-body text-lg text-on-surface-variant leading-relaxed space-y-4">
-<p>Desde nuestra fundación en Esperanza, Santa Fe, hace más de 50 años, en Grupo CEM hemos evolucionado de un emprendimiento familiar a un referente indiscutido del sector agroindustrial argentino.</p>
-<p>Nuestra visión de 'Cadena de Valores' se fundamenta en la integración vertical absoluta: desde el grano hasta la mesa de las familias, garantizando trazabilidad y compromiso social.</p>
+<p>Desde nuestra fundación en la localidad de Humboldt, Provincia de Santa Fe, hace más de 50 años, Grupo CEM evoluciona desde un emprendimiento familiar hacia ser un referente indiscutido del sector agroindustrial argentino.</p>
+<p>La visión de 'Cadena de valor' se fundamenta en la integración vertical total: desde el grano hasta la mesa de las familias, transformando proteína vegetal y animal en alimentos garantizando trazabilidad, calidad y compromiso social.</p>
 </div>
 </div>
 <div class="order-1 md:order-2 relative">
@@ -1537,10 +1547,10 @@
 <rect x="1.5" y="1.5" width="97" height="97" rx="1.2" vector-effect="non-scaling-stroke"></rect>
 </svg>
 </div>
-<div class="medallion-1974 hidden md:flex" aria-label="Fundación 1974 en Esperanza, Santa Fe">
+<div class="medallion-1974 hidden md:flex" aria-label="Fundación 1974 en Humboldt, Santa Fe">
 <span class="mdl-eyebrow">Año de inicio</span>
 <span class="mdl-year">1974</span>
-<span class="mdl-seal">Esperanza · Santa Fe</span>
+<span class="mdl-seal">Humboldt · Santa Fe</span>
 </div>
 </div>
 </div>
@@ -1548,27 +1558,37 @@
 <div class="timeline-wrap max-w-7xl mx-auto px-8">
 <!-- Desktop SVG timeline -->
 <div class="timeline-desktop hidden md:block">
-<svg class="timeline-svg" viewBox="0 0 1000 140" width="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-<path class="timeline-svg-path" d="M 40 80 L 960 80" />
-<g class="timeline-hit" data-x="40">
-<circle cx="40" cy="80" r="6" />
-<text class="year" x="40" y="50" text-anchor="middle">1974</text>
-<text class="label" x="40" y="108" text-anchor="start">Fundación</text>
+<svg class="timeline-svg" viewBox="0 0 1000 150" width="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+<path class="timeline-svg-path" d="M 100 80 L 900 80" />
+<g class="timeline-hit" data-x="100">
+<circle cx="100" cy="80" r="6" />
+<text class="year" x="100" y="50" text-anchor="middle">1974</text>
+<text class="label" x="100" y="98" text-anchor="middle"><tspan x="100">Fundación</tspan><tspan x="100" dy="11">Negocio de la avicultura</tspan></text>
 </g>
-<g class="timeline-hit" data-x="347">
-<circle cx="347" cy="80" r="6" />
-<text class="year" x="347" y="50" text-anchor="middle">1990</text>
-<text class="label" x="347" y="108" text-anchor="middle">Expansión avícola</text>
+<g class="timeline-hit" data-x="260">
+<circle cx="260" cy="80" r="6" />
+<text class="year" x="260" y="50" text-anchor="middle">1996</text>
+<text class="label" x="260" y="98" text-anchor="middle"><tspan x="260">Compañía Avícola</tspan><tspan x="260" dy="11">Industrialización</tspan><tspan x="260" dy="11">de huevos</tspan></text>
 </g>
-<g class="timeline-hit" data-x="653">
-<circle cx="653" cy="80" r="6" />
-<text class="year" x="653" y="50" text-anchor="middle">2005</text>
-<text class="label" x="653" y="108" text-anchor="middle">Lanzamiento Ovo Food</text>
+<g class="timeline-hit" data-x="420">
+<circle cx="420" cy="80" r="6" />
+<text class="year" x="420" y="50" text-anchor="middle">2008</text>
+<text class="label" x="420" y="98" text-anchor="middle"><tspan x="420">Carnave</tspan><tspan x="420" dy="11">Inicio del sistema</tspan><tspan x="420" dy="11">de franquicias</tspan></text>
 </g>
-<g class="timeline-hit" data-x="960">
-<circle cx="960" cy="80" r="6" />
-<text class="year" x="960" y="50" text-anchor="middle">2026</text>
-<text class="label" x="960" y="104" text-anchor="end"><tspan x="960">4 marcas</tspan><tspan x="960" dy="14">600+ colaboradores</tspan></text>
+<g class="timeline-hit" data-x="580">
+<circle cx="580" cy="80" r="6" />
+<text class="year" x="580" y="50" text-anchor="middle">2010</text>
+<text class="label" x="580" y="98" text-anchor="middle"><tspan x="580">Compañía Avícola</tspan><tspan x="580" dy="11">Proveedor nacional</tspan><tspan x="580" dy="11">de retail</tspan></text>
+</g>
+<g class="timeline-hit" data-x="740">
+<circle cx="740" cy="80" r="6" />
+<text class="year" x="740" y="50" text-anchor="middle">2021</text>
+<text class="label" x="740" y="98" text-anchor="middle"><tspan x="740">Cía Avícola</tspan><tspan x="740" dy="11">Nueva marca: Ovofood</tspan><tspan x="740" dy="11">Suplementos proteicos</tspan></text>
+</g>
+<g class="timeline-hit" data-x="900">
+<circle cx="900" cy="80" r="6" />
+<text class="year" x="900" y="50" text-anchor="middle">2025</text>
+<text class="label" x="900" y="98" text-anchor="middle"><tspan x="900">Carnave</tspan><tspan x="900" dy="11">Red comercial</tspan><tspan x="900" dy="11">110 tiendas · 6 provincias</tspan></text>
 </g>
 </svg>
 </div>
@@ -1576,19 +1596,27 @@
 <ul class="timeline-mobile md:hidden space-y-0 mt-4">
 <li class="timeline-mobile-item">
 <p class="tm-year">1974</p>
-<p class="tm-label">Fundación</p>
+<p class="tm-label">Fundación · Negocio de la avicultura</p>
 </li>
 <li class="timeline-mobile-item">
-<p class="tm-year">1990</p>
-<p class="tm-label">Expansión avícola</p>
+<p class="tm-year">1996</p>
+<p class="tm-label">Compañía Avícola · Industrialización de huevos</p>
 </li>
 <li class="timeline-mobile-item">
-<p class="tm-year">2005</p>
-<p class="tm-label">Lanzamiento Ovo Food</p>
+<p class="tm-year">2008</p>
+<p class="tm-label">Carnave · Inicio del sistema de franquicias</p>
 </li>
 <li class="timeline-mobile-item">
-<p class="tm-year">2026</p>
-<p class="tm-label">4 marcas · 600+ colaboradores</p>
+<p class="tm-year">2010</p>
+<p class="tm-label">Compañía Avícola · Proveedor nacional de retail</p>
+</li>
+<li class="timeline-mobile-item">
+<p class="tm-year">2021</p>
+<p class="tm-label">Cía Avícola · Nueva marca: Ovofood · Suplementos proteicos</p>
+</li>
+<li class="timeline-mobile-item">
+<p class="tm-year">2025</p>
+<p class="tm-label">Carnave · Red comercial: 110 tiendas · 6 provincias</p>
 </li>
 </ul>
 </div>

@@ -500,7 +500,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   const years  = [...document.querySelectorAll('.timeline-hit text.year')];
   const labels = [...document.querySelectorAll('.timeline-hit text.label')];
 
-  const X0 = 40, X1 = 960, Y = 80;   // extremos y altura de la línea (coords del viewBox)
+  const X0 = 100, X1 = 900, Y = 80;   // extremos y altura de la línea (coords del viewBox)
   const milestones = hits.map((hit, i) => ({
     circle: circles[i], year: years[i], label: labels[i],
     x: parseFloat(hit.dataset.x), lit: false,
