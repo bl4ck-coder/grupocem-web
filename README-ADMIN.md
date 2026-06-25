@@ -59,16 +59,41 @@ Las KV/Blob keys se obtienen del dashboard de Vercel tras crear los Storage. Si 
 
 ### Cutover de dominio `grupocem.com.ar`
 
-Pasos resumidos (ver spec sección 8 para el detalle):
+> **Estado 2026-06-25:** `grupocem.com.ar` y `www.grupocem.com.ar` ya están **agregados al
+> proyecto Vercel `grupocem-web-ahal`** (quedan en "misconfigured" hasta que apunte el DNS).
+> Único bloqueante: acceso al panel de Cloudflare.
 
-1. Capturar todos los registros DNS actuales del dominio (especial atención a MX y TXT).
-2. 24-48 h antes: bajar TTL de A y CNAME a 300s.
-3. En Vercel → Domains → agregar `grupocem.com.ar` y `www.grupocem.com.ar`.
-4. En el panel del registrador (NIC.ar / DonWeb / etc.):
-   - Reemplazar `A` de la raíz por `76.76.21.21`.
-   - Reemplazar `CNAME` de `www` por `cname.vercel-dns.com`.
-   - **NO tocar registros MX ni TXT del correo.**
-5. Verificar SSL en Vercel y mandar mail de prueba para confirmar que el correo siga andando.
-6. Subir TTL a 3600s. Apagar la web vieja o moverla a `legacy.grupocem.com.ar`.
+**DNS actual (snapshot para rollback):**
 
-Si NIC.ar no permite editar A de la raíz, delegar nameservers a Cloudflare (gratis) y desde ahí apuntar a Vercel.
+| Capa | Valor actual |
+|---|---|
+| Registrar | NIC.ar (`.com.ar`) — **no se toca** |
+| DNS / nameservers | **Cloudflare**: `max.ns.cloudflare.com`, `rachel.ns.cloudflare.com` |
+| `A` raíz (`grupocem.com.ar`) | `200.2.120.82` |
+| `www` | `CNAME → carnave.grupocem.com.ar` |
+| `MX` (correo) | `grupocem-com-ar.mail.protection.outlook.com` (Microsoft 365) |
+| `TXT` | `v=spf1 include:spf.protection.outlook.com include:vtigermails.com -all` · `MS=ms51987285` |
+
+Como el DNS ya vive en **Cloudflare**, **NO hay que tocar NIC.ar**. Todo el cambio es en Cloudflare.
+El TTL del `A`/`CNAME` ya está en 300s → propagación rápida.
+
+**Qué pedirle al cliente:** acceso al panel de **Cloudflare** del dominio (invitación como Member
+con permiso de DNS, o usuario + contraseña + 2FA). Preguntar **quién creó/maneja esa cuenta**
+(puede ser un dev o empresa anterior).
+
+**Cambios en Cloudflare (cuando haya acceso):**
+
+1. `A` raíz `grupocem.com.ar`: `200.2.120.82` → **`76.76.21.21`** — en **DNS only (nube gris)**.
+2. `www`: apuntar a Vercel con **`A 76.76.21.21`** (o `CNAME → cname.vercel-dns.com`) — en **DNS only**.
+3. **NO TOCAR**: `MX` (Outlook), `TXT` SPF, `TXT MS=...`. El correo queda intacto.
+4. No hace falta TXT `_vercel` de verificación (confirmado al agregar el dominio por CLI: sólo pide el `A`).
+
+**Verificación:**
+
+1. Vercel auto-verifica y emite SSL en minutos (llega un mail a la cuenta de Vercel).
+2. Abrir `https://grupocem.com.ar` y `https://www.grupocem.com.ar` con candado OK.
+3. **Probar correo**: mandar un mail *a* `info@grupocem.com.ar` y *desde* esa casilla hacia afuera.
+4. (Opcional) en Vercel → Domains, setear `www` como **redirect 308 → `grupocem.com.ar`**.
+5. Dejar la web vieja prendida 3-7 días; luego apagarla o moverla a `legacy.grupocem.com.ar`.
+
+**Rollback:** en Cloudflare volver `A` raíz a `200.2.120.82` y `www` a `carnave.grupocem.com.ar` (~5 min).
