@@ -417,14 +417,29 @@
           .nc-panel-number small { font-size: 9px; }
         }
 
-        /* ── Hero → KPI cinema fade: oscurece sutil + rojo solo en último 2vh ── */
+        /* ── Hero → KPI cinema fade: el video se hunde a sombra y el rojo emerge
+              limpio. Dos capas: (1) rojo que entra recién en la mitad baja, (2) un
+              oscurecido que hunde el video a casi-negro en el cruce. Esto evita el
+              cruce "gris" de rojo translúcido filmado sobre el video. ── */
         .hero-fade-to-red {
           position: absolute;
           left: 0;
           right: 0;
           bottom: 0;
-          height: 12vh;
-          background: linear-gradient(to bottom, rgba(183,28,28,0) 0%, rgba(183,28,28,0.35) 55%, rgba(183,28,28,0.8) 85%, #b71c1c 100%);
+          height: 16vh;
+          background:
+            linear-gradient(to bottom,
+              rgba(183,28,28,0) 0%,
+              rgba(183,28,28,0) 26%,
+              rgba(183,28,28,0.28) 50%,
+              rgba(183,28,28,0.72) 76%,
+              rgba(183,28,28,0.95) 91%,
+              #b71c1c 100%),
+            linear-gradient(to bottom,
+              rgba(28,6,6,0) 0%,
+              rgba(28,6,6,0.38) 38%,
+              rgba(28,6,6,0.42) 56%,
+              rgba(28,6,6,0) 86%);
           pointer-events: none;
           z-index: 5;
         }
