@@ -417,29 +417,26 @@
           .nc-panel-number small { font-size: 9px; }
         }
 
-        /* ── Hero → KPI cinema fade: el video se hunde a sombra y el rojo emerge
-              limpio. Dos capas: (1) rojo que entra recién en la mitad baja, (2) un
-              oscurecido que hunde el video a casi-negro en el cruce. Esto evita el
-              cruce "gris" de rojo translúcido filmado sobre el video. ── */
+        /* ── Hero → KPI: el video funde DIRECTO al rojo de marca (#b71c1c), sin
+              desvío por negro. El rojo emerge translúcido desde arriba y llega a
+              opaco total (alpha 1) en ~88% de la banda: a partir de ahí el video
+              queda 100% tapado por rojo sólido, así que NINGÚN frame (ni los grises:
+              cemento, cielo, revista OVO) puede asomar como banda — el rojo opaco lo
+              cubre por igual, igual de robusto que el negro pero sin franja oscura.
+              El último tramo es #b71c1c puro, al ras de la sección KPI (.bg-primary,
+              también #b71c1c): cero costura entre hero y banda roja. ── */
         .hero-fade-to-red {
           position: absolute;
           left: 0;
           right: 0;
           bottom: 0;
-          height: 16vh;
-          background:
-            linear-gradient(to bottom,
-              rgba(183,28,28,0) 0%,
-              rgba(183,28,28,0) 26%,
-              rgba(183,28,28,0.28) 50%,
-              rgba(183,28,28,0.72) 76%,
-              rgba(183,28,28,0.95) 91%,
-              #b71c1c 100%),
-            linear-gradient(to bottom,
-              rgba(28,6,6,0) 0%,
-              rgba(28,6,6,0.38) 38%,
-              rgba(28,6,6,0.42) 56%,
-              rgba(28,6,6,0) 86%);
+          height: 13vh;
+          background: linear-gradient(to bottom,
+            rgba(183,28,28,0) 0%,
+            rgba(183,28,28,0.55) 28%,
+            rgba(183,28,28,0.9) 48%,
+            #b71c1c 60%,
+            #b71c1c 100%);
           pointer-events: none;
           z-index: 5;
         }
