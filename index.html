@@ -461,6 +461,16 @@
           color: #70685e;
         }
 
+        /* ── Footer en celular (< sm 640px): apilado, centrado y más compacto ── */
+        @media (max-width: 639.98px) {
+          #contacto .grid { text-align: center; gap: 2rem; }
+          #contacto .grid .flex { justify-content: center; }
+          #contacto .grid .max-w-xs { margin-left: auto; margin-right: auto; }
+          /* La marca (logo + tagline + "Trabajá con nosotros" + compartir) va ÚLTIMA en
+             celular, justo antes del © 2026 — el CTA cierra la página. */
+          #contacto .grid > div:first-child { order: 1; }
+        }
+
         /* ── Timeline enhanced ── */
         .timeline-hit .year { transition: none; }
 
@@ -1097,6 +1107,10 @@
             position: static; transform: none;
             left: auto; top: auto; margin-top: 0;
             max-width: 90%;
+            /* No comprimir el cuerpo: con overflow:hidden el min-size flex es 0, así que
+               el panel lo encogía y recortaba el CTA (caso Ovo Food: +tag-sub +6 pills).
+               flex-shrink:0 conserva el alto de contenido; el panel crece si hace falta. */
+            flex-shrink: 0;
             transition: max-height 0.65s cubic-bezier(0.22, 1, 0.36, 1),
                         opacity 0.45s ease 0.1s,
                         margin-top 0.65s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1343,7 +1357,7 @@
 <!-- 4. Noticias Section -->
 <section id="noticias" class="py-24 bg-[#f7f7f7]">
 <div class="max-w-7xl mx-auto px-8">
-<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
 <div>
 <span class="text-primary font-bold tracking-[0.3em] text-xs uppercase">01 — Prensa &amp; Medios</span>
 <h2 class="font-serif text-5xl text-[#70685e] mt-2 font-bold">Novedades</h2>
@@ -1674,7 +1688,7 @@ Trabajá con Nosotros
 </li>
 <li class="flex items-center gap-3">
 <span class="material-symbols-outlined text-[color:var(--brand-gold)] text-xl">call</span>
-<a href="tel:+543496422002" class="hover:text-primary transition-colors">+54 3496 422002</a>
+<a href="tel:+543496422002" class="hover:text-primary transition-colors">+54 03496 422002</a>
 </li>
 <li class="flex items-center gap-3">
 <span class="material-symbols-outlined text-[color:var(--brand-gold)] text-xl">mail</span>
@@ -1698,9 +1712,10 @@ LinkedIn</a></li>
 
 <div class="footer-rule" style="opacity:0.3;"></div>
 
-<div class="py-6 px-10 md:px-20 max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+<div class="py-6 px-10 md:px-20 max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-x-6 gap-y-2">
 <p class="font-body text-xs text-on-surface-variant tracking-wider">© 2026 <span class="font-serif italic font-bold">Grupo CEM</span> · Todos los derechos reservados.</p>
-<p class="font-body text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">Cadena de Valores · Esperanza, SF · <a href="#" data-open-admin-modal class="hover:text-primary transition-colors" rel="nofollow">Admin</a></p>
+<p class="font-body text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/50 whitespace-nowrap">Desarrollado por <span class="font-semibold tracking-[0.35em] text-[color:var(--brand-gold-dk)]">AIZURG</span></p>
+<p class="hidden md:block font-body text-[10px] uppercase tracking-[0.3em] text-on-surface-variant/60">Cadena de Valores · Esperanza, SF · <a href="#" data-open-admin-modal class="hover:text-primary transition-colors" rel="nofollow">Admin</a></p>
 </div>
 </footer>
 
@@ -1799,7 +1814,7 @@ LinkedIn</a></li>
     </button>
     <p class="cv-modal-eyebrow">Sumate al equipo</p>
     <h2 class="cv-modal-title" id="cv-modal-title">Trabajá con nosotros</h2>
-    <p class="cv-modal-sub">Dejanos tus datos y adjuntá tu CV. Te contactamos a la brevedad.</p>
+    <p class="cv-modal-sub">Dejanos tus datos y adjuntá tu CV.</p>
 
     <form
       class="cv-form"
